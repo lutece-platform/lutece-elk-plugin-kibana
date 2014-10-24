@@ -56,7 +56,7 @@ public class DashboardService
         HttpAccess httpAccess = new HttpAccess ( );
         
         strJSON = httpAccess.doGet( _strUrl);
-        listDashboard = getListDashboard ( strJSON );
+ //       listDashboard = getListDashboard ( strJSON );
         
         List<Dashboard> listDashboards = new ArrayList<Dashboard>();
         Dashboard dashboard = new Dashboard();
@@ -70,7 +70,7 @@ public class DashboardService
         return listDashboards;
         
     }
-    
+/*    
     public static List<String> getListDashboard( String strJSON )
     {
         
@@ -86,5 +86,5 @@ public class DashboardService
         }       
         return (listDashBoard);
     }
-    
+ */   
 }
