@@ -36,70 +36,72 @@ package fr.paris.lutece.plugins.kibana.web;
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.plugins.kibana.service.DashboardService;
 import fr.paris.lutece.plugins.kibana.service.ElasticsearchException;
-import fr.paris.lutece.portal.web.xpages.XPage;
-import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
+import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
+
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 /**
  * This class provides a simple implementation of an XPage
  */
- 
-@Controller( xpageName = "kibana" , pageTitleI18nKey = "kibana.xpage.kibana.pageTitle" , pagePathI18nKey = "kibana.xpage.kibana.pagePathLabel" )
+@Controller( xpageName = "kibana", pageTitleI18nKey = "kibana.xpage.kibana.pageTitle", pagePathI18nKey = "kibana.xpage.kibana.pagePathLabel" )
 public class KibanaApp extends MVCApplication
 {
     private static final String TEMPLATE_XPAGE = "/skin/plugins/kibana/kibana.html";
     private static final String TEMPLATE_ELASTICSEARH_ERROR = "/skin/plugins/kibana/elasticsearch_error.html";
     private static final String TEMPLATE_NO_DASHBOARD = "/skin/plugins/kibana/no_dashboard.html";
     private static final String VIEW_HOME = "home";
-    
     private static final String MARK_DASHBOARDS_LIST = "dashboards_list";
     private static final String MARK_CURRENT = "current";
     private static final String MARK_ERROR_MESSAGE = "error_message";
     private static final String PARAMETER_TAB = "tab";
-    
-    
+
     /**
-     * Returns the content of the page kibana. 
+     * Returns the content of the page kibana.
      * @param request The HTTP request
      * @return The view
      */
-    @View( value = VIEW_HOME , defaultView = true )
-    public XPage viewHome( HttpServletRequest request ) throws HttpAccessException
+    @View( value = VIEW_HOME, defaultView = true )
+    public XPage viewHome( HttpServletRequest request )
+        throws HttpAccessException
     {
         try
         {
-            List<Dashboard> listDashboards = DashboardService.getDashboard();
-            if( listDashboards.size() > 0 )
+            List<Dashboard> listDashboards = DashboardService.getDashboard(  );
+
+            if ( listDashboards.size(  ) > 0 )
             {
-                int nCurrent = listDashboards.get( 0 ).getId();
+                int nCurrent = listDashboards.get( 0 ).getId(  );
                 String strTab = request.getParameter( PARAMETER_TAB );
-                
-                if( strTab != null )
+
+                if ( strTab != null )
                 {
-                    
                 }
-                Map<String,Object> model = getModel();
+
+                Map<String, Object> model = getModel(  );
                 model.put( MARK_DASHBOARDS_LIST, listDashboards );
                 model.put( MARK_CURRENT, nCurrent );
+
                 return getXPage( TEMPLATE_XPAGE, request.getLocale(  ), model );
-            }   
+            }
             else
             {
                 return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale(  ) );
             }
         }
-        catch (ElasticsearchException ex)
+        catch ( ElasticsearchException ex )
         {
-                Map<String,Object> model = getModel();
-                model.put( MARK_ERROR_MESSAGE, ex.getMessage() );
-                return getXPage( TEMPLATE_ELASTICSEARH_ERROR , request.getLocale(  ), model );
+            Map<String, Object> model = getModel(  );
+            model.put( MARK_ERROR_MESSAGE, ex.getMessage(  ) );
 
+            return getXPage( TEMPLATE_ELASTICSEARH_ERROR, request.getLocale(  ), model );
         }
     }
 }

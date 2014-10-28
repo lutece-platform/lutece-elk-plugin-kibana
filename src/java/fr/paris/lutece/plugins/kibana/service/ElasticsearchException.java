@@ -31,13 +31,16 @@
  *
  * License 1.0
  */
-
 package fr.paris.lutece.plugins.kibana.service;
+
 
 /**
  * Elasticsearch Exception
  */
 public class ElasticsearchException extends Exception
 {
-    
+    public ElasticsearchException( String strMessage )
+    {
+        super( strMessage );
+    }
 }

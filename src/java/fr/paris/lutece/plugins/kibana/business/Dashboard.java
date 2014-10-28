@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.kibana.business;
 
+
 /**
  * Dashboard
  */
@@ -44,7 +45,7 @@ public class Dashboard
     /**
      * @return the Id
      */
-    public int getId()
+    public int getId(  )
     {
         return _nId;
     }
@@ -52,7 +53,7 @@ public class Dashboard
     /**
      * @param _nId the Id to set
      */
-    public void setId(int nId)
+    public void setId( int nId )
     {
         _nId = nId;
     }
@@ -60,7 +61,7 @@ public class Dashboard
     /**
      * @return the Name
      */
-    public String getName()
+    public String getName(  )
     {
         return _strName;
     }
@@ -68,10 +69,8 @@ public class Dashboard
     /**
      * @param strName the name
      */
-    public void setName(String strName)
+    public void setName( String strName )
     {
         _strName = strName;
     }
-    
-    
 }

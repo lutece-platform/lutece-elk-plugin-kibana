@@ -31,16 +31,19 @@
  *
  * License 1.0
  */
-
 package fr.paris.lutece.plugins.kibana.service;
 
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
-import java.util.ArrayList;
-import java.util.List;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * DashboardService
@@ -48,43 +51,53 @@ import net.sf.json.JSONObject;
 public class DashboardService
 {
     private static String _strUrl = "http://localhost:9200/kibana-int/_search?_type=dashboard";
-    
-    public static List<Dashboard> getDashboard() throws ElasticsearchException, HttpAccessException
+
+    public static List<Dashboard> getDashboard(  ) throws ElasticsearchException
     {
-        String strJSON;
-        List<String> listDashboard;
-        HttpAccess httpAccess = new HttpAccess ( );
-        
-        strJSON = httpAccess.doGet( _strUrl);
- //       listDashboard = getListDashboard ( strJSON );
-        
-        List<Dashboard> listDashboards = new ArrayList<Dashboard>();
-        Dashboard dashboard = new Dashboard();
-        dashboard.setId( 1 );
-        dashboard.setName( "Logstash Search");
-        listDashboards.add(dashboard);
-        Dashboard dashboard2 = new Dashboard();
-        dashboard2.setId( 2 );
-        dashboard2.setName( "Logstash Search");
-        listDashboards.add(dashboard2);
+        List<Dashboard> listDashboards = new ArrayList<Dashboard>(  );
+
+        HttpAccess httpAccess = new HttpAccess(  );
+
+        try
+        {
+            String strJSON = httpAccess.doGet( _strUrl );
+            List<String> listDashboardNames = getListDashboard( strJSON );
+            int nIndex = 1;
+
+            for ( String strDashboardName : listDashboardNames )
+            {
+                Dashboard dashboard = new Dashboard(  );
+                dashboard.setId( nIndex );
+                dashboard.setName( strDashboardName );
+                listDashboards.add( dashboard );
+                nIndex++;
+            }
+        }
+        catch ( HttpAccessException ex )
+        {
+            throw new ElasticsearchException( ex.getMessage(  ) );
+        }
+
         return listDashboards;
-        
     }
-/*    
+
     public static List<String> getListDashboard( String strJSON )
     {
-        
-        List<String> listDashBoard = null;
-        
-        
-        JSONObject obj = new JSONObject( strJSON );
-        JSONArray arr = obj.getJSONObject("hits").getJSONArray("hits");
-        for (int i = 0; i < arr.length(); i++)
+        List<String> listDashBoard = new ArrayList<String>(  );
+
+        JSONObject obj = (JSONObject) JSONSerializer.toJSON( strJSON );
+        JSONArray arr = obj.getJSONObject( "hits" ).getJSONArray( "hits" );
+
+        for ( int i = 0; i < arr.size(  ); i++ )
         {
-            if ( arr.getString("_type") == "dashboard")
-                listDashBoard.add(arr.getString("_id"));
-        }       
-        return (listDashBoard);
+            JSONObject document = arr.getJSONObject( i );
+
+            if ( ( document != null ) && "dashboard".equals( document.getString( "_type" ) ) )
+            {
+                listDashBoard.add( document.getString( "_id" ) );
+            }
+        }
+
+        return ( listDashBoard );
     }
- */   
 }
