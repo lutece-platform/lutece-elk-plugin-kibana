@@ -35,12 +35,12 @@ package fr.paris.lutece.plugins.kibana.web;
 
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.plugins.kibana.service.DashboardService;
-import fr.paris.lutece.plugins.kibana.service.ElasticsearchException;
+import fr.paris.lutece.plugins.kibana.service.NoElasticSearchServerException;
+import fr.paris.lutece.plugins.kibana.service.NoKibanaIndexException;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
 import fr.paris.lutece.portal.web.xpages.XPage;
-import fr.paris.lutece.util.httpaccess.HttpAccessException;
 
 import java.util.List;
 import java.util.Map;
@@ -70,7 +70,6 @@ public class KibanaApp extends MVCApplication
      */
     @View( value = VIEW_HOME, defaultView = true )
     public XPage viewHome( HttpServletRequest request )
-        throws HttpAccessException
     {
         try
         {
@@ -83,6 +82,14 @@ public class KibanaApp extends MVCApplication
 
                 if ( strTab != null )
                 {
+                    try 
+                    { 
+                        nCurrent = Integer.parseInt( strTab );
+                    }
+                    catch( NumberFormatException ex )
+                    {
+                        nCurrent = listDashboards.get( 0 ).getId(  );
+                    }
                 }
 
                 Map<String, Object> model = getModel(  );
@@ -96,10 +103,14 @@ public class KibanaApp extends MVCApplication
                 return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale(  ) );
             }
         }
-        catch ( ElasticsearchException ex )
+        catch ( NoKibanaIndexException ex )
+        {
+            return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale(  ) );
+        }
+        catch (NoElasticSearchServerException ex)
         {
             Map<String, Object> model = getModel(  );
-            model.put( MARK_ERROR_MESSAGE, ex.getMessage(  ) );
+            model.put( MARK_ERROR_MESSAGE, ex.getMessage() );
 
             return getXPage( TEMPLATE_ELASTICSEARH_ERROR, request.getLocale(  ), model );
         }

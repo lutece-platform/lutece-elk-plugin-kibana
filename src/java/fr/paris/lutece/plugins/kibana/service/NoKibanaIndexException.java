@@ -37,9 +37,9 @@ package fr.paris.lutece.plugins.kibana.service;
 /**
  * Elasticsearch Exception
  */
-public class ElasticsearchException extends Exception
+public class NoKibanaIndexException extends Exception
 {
-    public ElasticsearchException( String strMessage )
+    public NoKibanaIndexException( String strMessage )
     {
         super( strMessage );
     }

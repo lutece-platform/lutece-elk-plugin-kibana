@@ -50,9 +50,10 @@ import java.util.List;
  */
 public class DashboardService
 {
+    private static final String NOT_FOUND = "404";
     private static String _strUrl = "http://localhost:9200/kibana-int/_search?_type=dashboard";
 
-    public static List<Dashboard> getDashboard(  ) throws ElasticsearchException
+    public static List<Dashboard> getDashboard(  ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
         List<Dashboard> listDashboards = new ArrayList<Dashboard>(  );
 
@@ -75,7 +76,15 @@ public class DashboardService
         }
         catch ( HttpAccessException ex )
         {
-            throw new ElasticsearchException( ex.getMessage(  ) );
+            
+            if( ex.getMessage(  ).indexOf( NOT_FOUND ) > 0 )
+            {
+                throw new NoKibanaIndexException( ex.getMessage(  ) );
+            }
+            else
+            {
+                throw new NoElasticSearchServerException(ex.getMessage(  ) );
+            }
         }
 
         return listDashboards;
