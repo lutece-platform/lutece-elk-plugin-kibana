@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.kibana.service;
 
-import fr.paris.lutece.plugins.grustorage.elastic.util.constant.GRUElasticsConstants;
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.plugins.kibana.utils.constants.KibanaConstants;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;

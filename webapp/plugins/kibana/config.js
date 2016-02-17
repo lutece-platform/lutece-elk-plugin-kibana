@@ -29,7 +29,7 @@ function (Settings) {
      *  +elasticsearch: {server: "http://localhost:9200", withCredentials: true}+
      *
      */
-    elasticsearch: "http://poc-dev.lutece.paris.fr:9200",
+    elasticsearch: "https://dev.lutece.paris.fr/poc/dev/elasticsearch",
 
     /** @scratch /configuration/config.js/5
      *
