@@ -33,16 +33,31 @@
  */
 package fr.paris.lutece.plugins.kibana.service;
 
+import fr.paris.lutece.plugins.grustorage.elastic.business.ElasticConnexion;
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
+import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.xerces.jaxp.SAXParserImpl.JAXPSAXParser;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jettison.json.JSONException;
+
 
 
 /**
@@ -51,18 +66,45 @@ import java.util.List;
 public class DashboardService
 {
     private static final String NOT_FOUND = "404";
-    private static String _strUrl = "http://localhost:9200/kibana-int/_search?_type=dashboard";
-
+    private static String _strUrl ;
+    private static String _strUrlDashboard ;
+    
+    //PROPERTIES
+    private static final String PROPERTY_KIBANA_URL = "kibana.url";
+    private static final String PROPERTY_KIBANA_URL_DASHBOARD= "kibana.UrlDashboard";
+    	
     public static List<Dashboard> getDashboard(  ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
         List<Dashboard> listDashboards = new ArrayList<Dashboard>(  );
-
-        HttpAccess httpAccess = new HttpAccess(  );
-
+        
+        String json, retour = StringUtils.EMPTY ;
+        _strUrl = AppPropertiesService.getProperty( PROPERTY_KIBANA_URL ) ;
+        _strUrlDashboard = AppPropertiesService.getProperty( PROPERTY_KIBANA_URL_DASHBOARD ) ;
+        
         try
         {
-            String strJSON = httpAccess.doGet( _strUrl );
-            List<String> listDashboardNames = getListDashboard( strJSON );
+        	HashMap<String, String> mapParam = new HashMap<String, String>(  );
+            mapParam.put( "_type", "dashboard" );
+
+            json = ElasticConnexion.formatExactSearch( mapParam );
+
+            retour = ElasticConnexion.sentToElasticPOST( _strUrl, json );
+            
+            List<String> listDashboardNames = getListDashboard( retour );
+            
+            Map<String,String> mapIframe = new HashMap<String,String>( );
+            
+            JsonNode jsonRetour = ElasticConnexion.setJsonToJsonTree( retour );
+            List<JsonNode> tmp = jsonRetour.findValues( "_source" );
+                        
+            for ( JsonNode node : tmp )
+            {
+            	String strTitle = node.findValue( "title" ).asText(  ) ;
+                if ( node != null )
+                {
+                	mapIframe.put( strTitle, generateIframe ( node )  );
+                }
+            }
             int nIndex = 1;
 
             for ( String strDashboardName : listDashboardNames )
@@ -70,13 +112,13 @@ public class DashboardService
                 Dashboard dashboard = new Dashboard(  );
                 dashboard.setId( nIndex );
                 dashboard.setName( strDashboardName );
+                dashboard.setIframe( mapIframe.get( strDashboardName ));
                 listDashboards.add( dashboard );
                 nIndex++;
             }
         }
-        catch ( HttpAccessException ex )
+        catch ( IOException ex )
         {
-            
             if( ex.getMessage(  ).indexOf( NOT_FOUND ) > 0 )
             {
                 throw new NoKibanaIndexException( ex.getMessage(  ) );
@@ -108,5 +150,93 @@ public class DashboardService
         }
 
         return ( listDashBoard );
+    }
+    
+    private static String generateIframe ( JsonNode node ) throws JsonProcessingException, IOException
+    {
+    	String strTitle = "", strDarkTheme ="",strAnalyzeWildCard = "", strQuery = "", strPanels="", strPrefix="";
+    	
+    	StringBuilder strBuilder = new StringBuilder( _strUrlDashboard );
+    	
+    	try
+    	{
+    		strTitle =  node.findValue( "title" ).asText(  );
+    		String  strPanelsJsonNode =  node.findValue( "panelsJSON" ).asText();
+    		
+    		org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray(strPanelsJsonNode); 
+    		
+    		for (int i = 0; i < array.length(); i++) 
+    			{
+    				org.codehaus.jettison.json.JSONObject tmpNode = array.getJSONObject(i) ;
+    				
+    				StringBuilder strVisualisation = new StringBuilder( "(col:" );
+    				strVisualisation.append( tmpNode.getString("col")) ;
+    				strVisualisation.append( ",id:") ;
+    				strVisualisation.append( tmpNode.getString("id") ) ;
+    				strVisualisation.append( ",panelIndex:") ;
+    				strVisualisation.append( tmpNode.getString("panelIndex") ) ;
+    				strVisualisation.append( ",row:") ;
+    				strVisualisation.append( tmpNode.getString("row") ) ;
+    				strVisualisation.append( ",size_x:") ;
+    				strVisualisation.append( tmpNode.getString("size_x") ) ;
+    				strVisualisation.append( ",size_y:") ;
+    				strVisualisation.append( tmpNode.getString("size_y") ) ;
+    				strVisualisation.append( ",type:") ;
+    				strVisualisation.append( tmpNode.getString("type") ) ;
+    				strVisualisation.append( ")") ;
+    				
+    				strPanels +=  strPrefix + strVisualisation.toString( )   ;
+    				strPrefix = "," ;
+				}
+    		
+    		ObjectMapper mapper = new ObjectMapper();
+    		
+    		JsonNode optionsJsonNode = mapper.readTree( node.findValue( "optionsJSON" ).asText(  )  ) ;
+    		
+    		strDarkTheme =  optionsJsonNode.findValue( "darkTheme" ).asText(  );
+    		
+			JsonNode kibanaSavedObjectNode = node.path("kibanaSavedObjectMeta");
+			String searchSource = kibanaSavedObjectNode.findValue( "searchSourceJSON" ).asText(  ) ;
+			JsonNode searchSourceJsonNode = mapper.readTree(searchSource  ) ;
+			
+			JsonNode filterNode =  searchSourceJsonNode.path("filter");
+				
+			for ( JsonNode tmpNode : filterNode) 
+				{
+					JsonNode queryNode = tmpNode.path("query");
+					JsonNode queryStringNode = queryNode.path("query_string");
+					strAnalyzeWildCard = queryStringNode.findValue("analyze_wildcard").asText(  ) ;
+					strQuery = queryStringNode.findValue("query").asText(  ) ;
+				}
+			
+        }
+        catch( NullPointerException ex)
+        {
+        	AppLogService.error( "Parsing dashboard fail"+ node.toString( ), ex );
+        	Response.status( Response.Status.INTERNAL_SERVER_ERROR ).entity( "{ \"status\": \"Error : Parsing dashboard fail"+ node.toString() + "\" }" ).build(  );
+        } 
+    	catch ( JSONException e ) 
+    	{	
+    		AppLogService.error( "Parsing dashboard fail"+ node.toString( ), e);
+		}
+    	
+    	strDarkTheme = strDarkTheme.equals("true") ? "t" : "f" ;
+    	strAnalyzeWildCard = strAnalyzeWildCard.equals("true") ? "t" : "f" ;
+    	
+    	strBuilder.append( strTitle )
+    	.append("?").append("_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))")
+    	.append("&_a=(filters:!(),options:(darkTheme:!")
+    	.append( strDarkTheme )
+    	.append("),panels:!(")
+    	.append(strPanels)
+    	.append("),query:(query_string:(analyze_wildcard:!")
+    	.append(strAnalyzeWildCard)
+    	.append(",query:'")
+    	.append(strQuery)
+    	.append("')), title:")
+    	.append(strTitle)
+    	.append(",uiState:())");
+    	
+    	return strBuilder.toString( ) ;
     }
 }
