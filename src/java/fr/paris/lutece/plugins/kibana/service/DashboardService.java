@@ -37,22 +37,17 @@ import fr.paris.lutece.plugins.grustorage.elastic.business.ElasticConnexion;
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.httpaccess.HttpAccess;
-import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.xerces.jaxp.SAXParserImpl.JAXPSAXParser;
+
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -66,6 +61,7 @@ import org.codehaus.jettison.json.JSONException;
 public class DashboardService
 {
     private static final String NOT_FOUND = "404";
+
     private static String _strUrl ;
     private static String _strUrlDashboard ;
     
@@ -73,6 +69,7 @@ public class DashboardService
     private static final String PROPERTY_KIBANA_URL = "kibana.url";
     private static final String PROPERTY_KIBANA_URL_DASHBOARD= "kibana.UrlDashboard";
     	
+
     public static List<Dashboard> getDashboard(  ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
         List<Dashboard> listDashboards = new ArrayList<Dashboard>(  );
@@ -83,6 +80,7 @@ public class DashboardService
         
         try
         {
+
         	HashMap<String, String> mapParam = new HashMap<String, String>(  );
             mapParam.put( "_type", "dashboard" );
 
@@ -105,6 +103,7 @@ public class DashboardService
                 	mapIframe.put( strTitle, generateIframe ( node )  );
                 }
             }
+
             int nIndex = 1;
 
             for ( String strDashboardName : listDashboardNames )
