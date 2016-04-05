@@ -98,6 +98,7 @@ public class DashboardService
             for ( JsonNode node : tmp )
             {
             	String strTitle = node.findValue( "title" ).asText(  ) ;
+            	strTitle = strTitle.replaceAll(" ", "-");
                 if ( node != null )
                 {
                 	mapIframe.put( strTitle, generateIframe ( node )  );
@@ -160,6 +161,7 @@ public class DashboardService
     	try
     	{
     		strTitle =  node.findValue( "title" ).asText(  );
+    		strTitle = strTitle.replaceAll(" ", "-");
     		String  strPanelsJsonNode =  node.findValue( "panelsJSON" ).asText();
     		
     		org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray(strPanelsJsonNode); 
