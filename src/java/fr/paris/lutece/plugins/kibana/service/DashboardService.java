@@ -79,6 +79,7 @@ public class DashboardService
         String json, retour = StringUtils.EMPTY ;
         _strUrl = AppPropertiesService.getProperty( PROPERTY_KIBANA_URL ) ;
         _strUrlDashboard = AppPropertiesService.getProperty( PROPERTY_KIBANA_URL_DASHBOARD ) ;
+        AppLogService.info( "URI : " +_strUrl);
         
         try
         {
@@ -87,7 +88,6 @@ public class DashboardService
             mapParam.put( "_type", "dashboard" );
 
             json = ElasticConnexion.formatExactSearch( mapParam );
-
             retour = ElasticConnexion.sentToElasticPOST( _strUrl, json );
             
             List<String> listDashboardNames = getListDashboard( retour );
