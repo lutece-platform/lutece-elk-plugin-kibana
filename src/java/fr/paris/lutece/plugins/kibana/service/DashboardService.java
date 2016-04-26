@@ -33,21 +33,23 @@
  */
 package fr.paris.lutece.plugins.kibana.service;
 
-import fr.paris.lutece.plugins.grustorage.elastic.business.ElasticConnexion;
+import fr.paris.lutece.plugins.grustorageelastic.business.ElasticConnexion;
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.Response;
-import org.apache.commons.lang.StringUtils;
 
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
