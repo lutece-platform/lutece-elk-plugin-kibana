@@ -90,6 +90,8 @@ public class DashboardService
             json = ElasticConnexion.formatExactSearch( mapParam );
             retour = ElasticConnexion.sentToElasticPOST( _strUrl, json );
             
+            AppLogService.info( "retour : " +retour);
+            
             List<String> listDashboardNames = getListDashboard( retour );
             
             Map<String,String> mapIframe = new HashMap<String,String>( );
@@ -150,7 +152,7 @@ public class DashboardService
                 listDashBoard.add( document.getString( "_id" ) );
             }
         }
-
+        AppLogService.info( "getListDashboard : " +listDashBoard.size( ) );
         return ( listDashBoard );
     }
     
@@ -159,7 +161,7 @@ public class DashboardService
     	String strTitle = "", strDarkTheme ="",strAnalyzeWildCard = "", strQuery = "", strPanels="", strPrefix="";
     	
     	StringBuilder strBuilder = new StringBuilder( _strUrlDashboard );
-    	
+    	AppLogService.info( "generateIframe BEGIN ");
     	try
     	{
     		strTitle =  node.findValue( "title" ).asText(  );
@@ -240,6 +242,7 @@ public class DashboardService
     	.append(strTitle)
     	.append(",uiState:())");
     	
+    	AppLogService.info( "generateIframe END "+ strBuilder.toString( ));
     	return strBuilder.toString( ) ;
     }
 }

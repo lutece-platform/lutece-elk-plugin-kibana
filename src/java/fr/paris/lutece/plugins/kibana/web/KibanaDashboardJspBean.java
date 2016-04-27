@@ -43,6 +43,7 @@ import fr.paris.lutece.plugins.kibana.service.DashboardService;
 import fr.paris.lutece.plugins.kibana.service.NoElasticSearchServerException;
 import fr.paris.lutece.plugins.kibana.service.NoKibanaIndexException;
 import fr.paris.lutece.plugins.kibana.utils.constants.KibanaConstants;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -68,7 +69,9 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
         try
         {
             List<Dashboard> listDashboards = DashboardService.getDashboard(  );
-
+            
+            AppLogService.info( "listDashboards size : " +listDashboards.size(  ));
+            
             if ( listDashboards.size(  ) > 0 )
             {
                 int nCurrent = listDashboards.get( 0 ).getId(  );
@@ -99,13 +102,14 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
         }
         catch ( NoKibanaIndexException ex )
         {
+        	AppLogService.error( "NoKibanaIndexException: " +ex.getMessage( ));
             return getPage( KibanaConstants.PROPERTY_PAGE_TITLE_DASHBOARD, KibanaConstants.TEMPLATE_NO_DASHBOARD );
         }
         catch (NoElasticSearchServerException ex)
         {
             Map<String, Object> model = getModel(  );
             model.put( KibanaConstants.MARK_ERROR_MESSAGE, ex.getMessage() );
-
+            AppLogService.error( KibanaConstants.MARK_ERROR_MESSAGE + ex.getMessage( ));
             return getPage( KibanaConstants.PROPERTY_PAGE_TITLE_DASHBOARD, KibanaConstants.TEMPLATE_ELASTICSEARH_ERROR, model );
         }
     }
