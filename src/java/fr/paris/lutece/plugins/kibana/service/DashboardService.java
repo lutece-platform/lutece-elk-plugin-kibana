@@ -229,7 +229,7 @@ public class DashboardService
     	strAnalyzeWildCard = strAnalyzeWildCard.equals("true") ? "t" : "f" ;
     	
     	strBuilder.append( strTitle )
-    	.append("?").append("_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))")
+    	.append("?").append("_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-60d,mode:quick,to:now))")
     	.append("&_a=(filters:!(),options:(darkTheme:!")
     	.append( strDarkTheme )
     	.append("),panels:!(")
