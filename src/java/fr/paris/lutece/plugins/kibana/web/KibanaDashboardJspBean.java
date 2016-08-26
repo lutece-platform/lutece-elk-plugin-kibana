@@ -42,8 +42,6 @@ import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.plugins.kibana.service.DashboardService;
 import fr.paris.lutece.plugins.kibana.service.NoElasticSearchServerException;
 import fr.paris.lutece.plugins.kibana.service.NoKibanaIndexException;
-import fr.paris.lutece.plugins.kibana.utils.constants.KibanaConstants;
-import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -52,30 +50,48 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 /**
  * KibanaDashboard JSP Bean abstract class for JSP Bean
  */
-@Controller( controllerJsp = "KibanaDashboard.jsp", controllerPath = "jsp/admin/plugins/kibana/", right = KibanaConstants.RIGHT_KIBANADASHBOARD )
+@Controller( controllerJsp = "KibanaDashboard.jsp", controllerPath = "jsp/admin/plugins/kibana/", right = KibanaDashboardJspBean.RIGHT_KIBANADASHBOARD )
 public class KibanaDashboardJspBean extends MVCAdminJspBean
 {
+    // Right
+    public static final String RIGHT_KIBANADASHBOARD = "KIBANA_MANAGEMENT";
+
     // Uid
     private static final long serialVersionUID = -8829869449480096316L;
+
+    // Templates
+    private static final String TEMPLATE_HOME = "/admin/plugins/kibana/kibana.html";
+    private static final String TEMPLATE_ELASTICSEARH_ERROR = "/admin/plugins/kibana/elasticsearch_error.html";
+    private static final String TEMPLATE_NO_DASHBOARD = "/admin/plugins/kibana/no_dashboard.html";
+
+    // Views
+    private static final String VIEW_DASHBOARD = "dashboard";
+
+    // Properties for page titles
+    private static final String PROPERTY_PAGE_TITLE_DASHBOARD = "kibana.adminFeature.KibanaDashboard.pageTitle";
+
+    // Freemarker
+    private static final String MARK_DASHBOARDS_LIST = "dashboards_list";
+    private static final String MARK_CURRENT = "current";
+    private static final String MARK_ERROR_MESSAGE = "error_message";
+    private static final String PARAMETER_TAB = "tab";
 
     /**
      * Returns the content of the page kibana.
      * @param request The HTTP request
      * @return The view
      */
-    @View( value = KibanaConstants.VIEW_DASHBOARD, defaultView = true )
+    @View( value = VIEW_DASHBOARD, defaultView = true )
     public String getKibanaDashboard( HttpServletRequest request )
     {
         try
         {
             List<Dashboard> listDashboards = DashboardService.getDashboard(  );
-            
-            AppLogService.info( "listDashboards size : " +listDashboards.size(  ));
-            
+
             if ( listDashboards.size(  ) > 0 )
             {
                 int nCurrent = listDashboards.get( 0 ).getId(  );
-                String strTab = request.getParameter( KibanaConstants.PARAMETER_TAB );
+                String strTab = request.getParameter( PARAMETER_TAB );
 
                 if ( strTab != null )
                 {
@@ -90,27 +106,26 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
                 }
 
                 Map<String, Object> model = getModel(  );
-                model.put( KibanaConstants.MARK_DASHBOARDS_LIST, listDashboards );
-                model.put( KibanaConstants.MARK_CURRENT, nCurrent );
+                model.put( MARK_DASHBOARDS_LIST, listDashboards );
+                model.put( MARK_CURRENT, nCurrent );
 
-                return getPage( KibanaConstants.PROPERTY_PAGE_TITLE_DASHBOARD, KibanaConstants.TEMPLATE_HOME, model );
+                return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_HOME, model );
             }
             else
             {
-                return getPage( KibanaConstants.PROPERTY_PAGE_TITLE_DASHBOARD, KibanaConstants.TEMPLATE_NO_DASHBOARD );
+                return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD );
             }
         }
         catch ( NoKibanaIndexException ex )
         {
-        	AppLogService.error( "NoKibanaIndexException: " +ex.getMessage( ));
-            return getPage( KibanaConstants.PROPERTY_PAGE_TITLE_DASHBOARD, KibanaConstants.TEMPLATE_NO_DASHBOARD );
+            return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD );
         }
         catch (NoElasticSearchServerException ex)
         {
             Map<String, Object> model = getModel(  );
-            model.put( KibanaConstants.MARK_ERROR_MESSAGE, ex.getMessage() );
-            AppLogService.error( KibanaConstants.MARK_ERROR_MESSAGE + ex.getMessage( ));
-            return getPage( KibanaConstants.PROPERTY_PAGE_TITLE_DASHBOARD, KibanaConstants.TEMPLATE_ELASTICSEARH_ERROR, model );
+            model.put( MARK_ERROR_MESSAGE, ex.getMessage() );
+
+            return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_ELASTICSEARH_ERROR, model );
         }
     }
 }

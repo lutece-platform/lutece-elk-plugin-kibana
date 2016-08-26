@@ -6,12 +6,10 @@
                 <#if dashboard.id = current>
                     <#assign class="class=\"active\"">
                     <#assign dashboard_name="${dashboard.name}">
-                    <#assign dashboard_iframe="${dashboard.iframe}">
                 </#if>
                 <li ${class}><a href="jsp/admin/plugins/kibana/KibanaDashboard.jsp?plugin_name=kibana&tab=${dashboard.id}">${dashboard.name}</a></li>
             </#list>
         </ul>
-         <iframe src="${dashboard_iframe}" width="100%" height="1000"></iframe>        
+        <iframe src="plugins/kibana/index.html#/dashboard/elasticsearch/${dashboard_name}" width="100%" height="1000"></iframe>
     </div>
 </div>
-

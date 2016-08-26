@@ -41,7 +41,6 @@ public class Dashboard
 {
     private int _nId;
     private String _strName;
-    private String _strIframe ;
 
     /**
      * @return the Id
@@ -74,23 +73,4 @@ public class Dashboard
     {
         _strName = strName;
     }
-    
-    /**
-     * Gets Iframe
-     * @return iframe the iframe
-     */
-	public String getIframe( ) 
-	{
-		return _strIframe;
-	}
-	
-	/**
-	 * Sets iframe
-	 * @param strIframe the iframe
-	 */
-	public void setIframe( String strIframe ) 
-	{
-		_strIframe = strIframe;
-	}
-    
 }
