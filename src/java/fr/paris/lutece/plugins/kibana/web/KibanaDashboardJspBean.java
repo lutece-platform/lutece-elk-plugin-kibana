@@ -71,6 +71,7 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
     private static final String PROPERTY_PAGE_TITLE_DASHBOARD = "kibana.adminFeature.KibanaDashboard.pageTitle";
 
     // Freemarker
+    private static final String MARK_KIBANA_SERVER_URL = "kibana_server_url";
     private static final String MARK_DASHBOARDS_LIST = "dashboards_list";
     private static final String MARK_CURRENT = "current";
     private static final String MARK_ERROR_MESSAGE = "error_message";
@@ -108,17 +109,22 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
                 Map<String, Object> model = getModel(  );
                 model.put( MARK_DASHBOARDS_LIST, listDashboards );
                 model.put( MARK_CURRENT, nCurrent );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
 
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_HOME, model );
             }
             else
             {
-                return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD );
+                Map<String, Object> model = getModel(  );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
+                return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD, model );
             }
         }
         catch ( NoKibanaIndexException ex )
         {
-            return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD );
+            Map<String, Object> model = getModel(  );
+            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
+            return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD, model );
         }
         catch (NoElasticSearchServerException ex)
         {

@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.kibana.service;
 
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 
@@ -51,7 +52,8 @@ import java.util.List;
 public class DashboardService
 {
     private static final String NOT_FOUND = "404";
-    private static String _strUrl = "http://localhost:5601/elasticsearch/.kibana/dashboard/_search";
+    private static final String KIBANA_SERVER_URL_PROPERTY = "kibana.kibana_server_url";
+    private static String _strUrl = getKibanaServerUrl(  ) + "/elasticsearch/.kibana/dashboard/_search";
 
     public static List<Dashboard> getDashboard(  ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
@@ -108,5 +110,9 @@ public class DashboardService
         }
 
         return ( listDashBoard );
+    }
+
+    public static String getKibanaServerUrl(  ) {
+        return AppPropertiesService.getProperty(KIBANA_SERVER_URL_PROPERTY, "http://localhost:5601");
     }
 }

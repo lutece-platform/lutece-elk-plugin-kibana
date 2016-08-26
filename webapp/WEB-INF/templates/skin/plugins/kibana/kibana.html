@@ -10,6 +10,6 @@
                 <li ${class}><a href="jsp/site/Portal.jsp?page=kibana&amp;tab=${dashboard.id}">${dashboard.name}</a></li>
             </#list>
         </ul>
-        <iframe src="http://localhost:5601/app/kibana#/dashboard/${dashboard_name}?embed=true" width="100%" height="1000"></iframe>
+        <iframe src="${kibana_server_url}/app/kibana#/dashboard/${dashboard_name}?embed=true" width="100%" height="1000"></iframe>
     </div>
 </div>

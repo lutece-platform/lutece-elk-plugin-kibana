@@ -58,6 +58,7 @@ public class KibanaApp extends MVCApplication
     private static final String TEMPLATE_ELASTICSEARH_ERROR = "/skin/plugins/kibana/elasticsearch_error.html";
     private static final String TEMPLATE_NO_DASHBOARD = "/skin/plugins/kibana/no_dashboard.html";
     private static final String VIEW_HOME = "home";
+    private static final String MARK_KIBANA_SERVER_URL = "kibana_server_url";
     private static final String MARK_DASHBOARDS_LIST = "dashboards_list";
     private static final String MARK_CURRENT = "current";
     private static final String MARK_ERROR_MESSAGE = "error_message";
@@ -95,17 +96,22 @@ public class KibanaApp extends MVCApplication
                 Map<String, Object> model = getModel(  );
                 model.put( MARK_DASHBOARDS_LIST, listDashboards );
                 model.put( MARK_CURRENT, nCurrent );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
 
                 return getXPage( TEMPLATE_XPAGE, request.getLocale(  ), model );
             }
             else
             {
-                return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale(  ) );
+                Map<String, Object> model = getModel(  );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
+                return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale(  ), model );
             }
         }
         catch ( NoKibanaIndexException ex )
         {
-            return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale(  ) );
+            Map<String, Object> model = getModel(  );
+            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
+            return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale(  ), model );
         }
         catch (NoElasticSearchServerException ex)
         {
