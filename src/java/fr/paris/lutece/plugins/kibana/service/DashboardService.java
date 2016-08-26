@@ -51,7 +51,7 @@ import java.util.List;
 public class DashboardService
 {
     private static final String NOT_FOUND = "404";
-    private static String _strUrl = "http://localhost:9200/kibana-int/_search?_type=dashboard";
+    private static String _strUrl = "http://localhost:5601/elasticsearch/.kibana/dashboard/_search";
 
     public static List<Dashboard> getDashboard(  ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
