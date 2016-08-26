@@ -64,17 +64,7 @@ public class DashboardService
         try
         {
             String strJSON = httpAccess.doGet( _strUrl );
-            List<String> listDashboardNames = getListDashboard( strJSON );
-            int nIndex = 1;
-
-            for ( String strDashboardName : listDashboardNames )
-            {
-                Dashboard dashboard = new Dashboard(  );
-                dashboard.setId( nIndex );
-                dashboard.setName( strDashboardName );
-                listDashboards.add( dashboard );
-                nIndex++;
-            }
+            listDashboards = getListDashboard( strJSON );
         }
         catch ( HttpAccessException ex )
         {
@@ -92,9 +82,9 @@ public class DashboardService
         return listDashboards;
     }
 
-    public static List<String> getListDashboard( String strJSON )
+    public static List<Dashboard> getListDashboard( String strJSON )
     {
-        List<String> listDashBoard = new ArrayList<String>(  );
+        List<Dashboard> listDashBoard = new ArrayList<Dashboard>(  );
 
         JSONObject obj = (JSONObject) JSONSerializer.toJSON( strJSON );
         JSONArray arr = obj.getJSONObject( "hits" ).getJSONArray( "hits" );
@@ -105,7 +95,10 @@ public class DashboardService
 
             if ( ( document != null ) && "dashboard".equals( document.getString( "_type" ) ) )
             {
-                listDashBoard.add( document.getString( "_id" ) );
+                Dashboard dashboard = new Dashboard(  );
+                dashboard.setId( document.getString( "_id" ) );
+                dashboard.setTitle( document.getJSONObject( "_source" ).getString( "title" ) );
+                listDashBoard.add( dashboard );
             }
         }
 

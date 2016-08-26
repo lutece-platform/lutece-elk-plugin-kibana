@@ -91,24 +91,17 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
 
             if ( listDashboards.size(  ) > 0 )
             {
-                int nCurrent = listDashboards.get( 0 ).getId(  );
+                String strCurrent = listDashboards.get( 0 ).getId(  );
                 String strTab = request.getParameter( PARAMETER_TAB );
 
                 if ( strTab != null )
                 {
-                    try 
-                    { 
-                        nCurrent = Integer.parseInt( strTab );
-                    }
-                    catch( NumberFormatException ex )
-                    {
-                        nCurrent = listDashboards.get( 0 ).getId(  );
-                    }
+                    strCurrent = strTab;
                 }
 
                 Map<String, Object> model = getModel(  );
                 model.put( MARK_DASHBOARDS_LIST, listDashboards );
-                model.put( MARK_CURRENT, nCurrent );
+                model.put( MARK_CURRENT, strCurrent );
                 model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
 
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_HOME, model );

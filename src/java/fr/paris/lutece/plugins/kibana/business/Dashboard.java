@@ -39,38 +39,38 @@ package fr.paris.lutece.plugins.kibana.business;
  */
 public class Dashboard
 {
-    private int _nId;
-    private String _strName;
+    private String _strId;
+    private String _strTitle;
 
     /**
      * @return the Id
      */
-    public int getId(  )
+    public String getId(  )
     {
-        return _nId;
+        return _strId;
     }
 
     /**
-     * @param _nId the Id to set
+     * @param strId the Id to set
      */
-    public void setId( int nId )
+    public void setId( String strId )
     {
-        _nId = nId;
+        _strId = strId;
     }
 
     /**
-     * @return the Name
+     * @return the Title
      */
-    public String getName(  )
+    public String getTitle(  )
     {
-        return _strName;
+        return _strTitle;
     }
 
     /**
-     * @param strName the name
+     * @param strTitle the name
      */
-    public void setName( String strName )
+    public void setTitle( String strTitle )
     {
-        _strName = strName;
+        _strTitle = strTitle;
     }
 }
