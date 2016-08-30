@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.kibana.service;
 
+import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.test.Utils;
 
@@ -60,7 +61,7 @@ public class DashboardServiceTest extends LuteceTestCase
         String strJSON = Utils.getFileContent( "search_dashboard.json" );
         System.out.println( strJSON );
 
-        List<String> list = DashboardService.getListDashboard( strJSON );
+        List<Dashboard> list = DashboardService.getListDashboard( strJSON );
         assertTrue( list.size(  ) == 2 );
     }
 }
