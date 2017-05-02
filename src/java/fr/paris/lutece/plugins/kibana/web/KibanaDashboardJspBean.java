@@ -87,7 +87,7 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
     {
         try
         {
-            List<Dashboard> listDashboards = DashboardService.getDashboard(  );
+            List<Dashboard> listDashboards = DashboardService.getDashboards(  );
 
             if ( listDashboards.size(  ) > 0 )
             {

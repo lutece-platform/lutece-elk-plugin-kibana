@@ -74,7 +74,7 @@ public class KibanaApp extends MVCApplication
     {
         try
         {
-            List<Dashboard> listDashboards = DashboardService.getDashboard(  );
+            List<Dashboard> listDashboards = DashboardService.getDashboards(  );
 
             if ( listDashboards.size(  ) > 0 )
             {

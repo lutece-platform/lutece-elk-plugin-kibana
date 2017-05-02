@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2017, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,10 +52,19 @@ import java.util.List;
 public class DashboardService
 {
     private static final String NOT_FOUND = "404";
-    private static final String KIBANA_SERVER_URL_PROPERTY = "kibana.kibana_server_url";
-    private static String _strUrl = getKibanaServerUrl(  ) + "/elasticsearch/.kibana/dashboard/_search";
+    private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.kibana_server_url";
+    private static final String DEFAULT_KIBANA_URL = "http://localhost:5601";
+    private static final String KIBANA_SERVER_URL = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_URL, DEFAULT_KIBANA_URL );
+    private static final String PROPERTY_ELASTIC_DASHBOARD_QUERY_URL = "kibana.elastic.dashboard_query_url";
+    private static final String ELASTIC_DASHBOARDS_URL = AppPropertiesService.getProperty( PROPERTY_ELASTIC_DASHBOARD_QUERY_URL );
 
-    public static List<Dashboard> getDashboard(  ) throws NoKibanaIndexException, NoElasticSearchServerException
+    /**
+     * Get the list of all dashboards
+     * @return The list of dashboards
+     * @throws NoKibanaIndexException if no Kibana index was found
+     * @throws NoElasticSearchServerException  if no Elastic server was found
+     */
+    public static List<Dashboard> getDashboards(  ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
         List<Dashboard> listDashboards = new ArrayList<Dashboard>(  );
 
@@ -63,7 +72,7 @@ public class DashboardService
 
         try
         {
-            String strJSON = httpAccess.doGet( _strUrl );
+            String strJSON = httpAccess.doGet( ELASTIC_DASHBOARDS_URL );
             listDashboards = getListDashboard( strJSON );
         }
         catch ( HttpAccessException ex )
@@ -82,6 +91,11 @@ public class DashboardService
         return listDashboards;
     }
 
+    /**
+     * Get the list of all dashboard
+     * @param strJSON The list of dashboard as JSON provided by Elastic
+     * @return The list
+     */
     public static List<Dashboard> getListDashboard( String strJSON )
     {
         List<Dashboard> listDashBoard = new ArrayList<Dashboard>(  );
@@ -105,7 +119,12 @@ public class DashboardService
         return ( listDashBoard );
     }
 
-    public static String getKibanaServerUrl(  ) {
-        return AppPropertiesService.getProperty(KIBANA_SERVER_URL_PROPERTY, "http://localhost:5601");
+    /**
+     * Get Kibana server URL
+     * @return The URL
+     */
+    public static String getKibanaServerUrl(  ) 
+    {
+        return KIBANA_SERVER_URL;
     }
 }
