@@ -126,7 +126,7 @@ public final class DashboardService
             }
         }
 
-        return ( listDashBoard );
+        return listDashBoard;
     }
 
     /**
