@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <properties>
-        <title>Plugin kibana</title>
+        <title>Plugin Kibana</title>
     </properties>
     <body>
-        <section name="Plugin kibana">
-            <!--
+        <section name="Plugin Kibana">
+            
             <p>
                 <img src="images/kibana.png" />
             </p>
-            -->
+            
             <subsection name="Introduction">
-                <p></p>
+                <p>
+                    Ce plugin permet d'afficher un ou plusieurs tableaux de bord Kibana 
+                    sur une page d'accueil du portail ou dans le back office. 
+                    Il recherchera automatiquement les tableaux de bord Kibana dans 
+                    un serveur ElasticSearch donné et affichera chacun dans un onglet. 
+                </p>
             </subsection>
             <subsection name="Configuration">
-                <p></p>
-            </subsection>
-            <subsection name="Usage">
-                <p></p>
+                <p>
+                    Les URL des serveurs Kibana et ElasticSearch doivent être définies 
+                    comme suit dans le fichier <b>kibana.properties</b>.
+                </p>
+                <p>
+<pre>                    
+# URL of the nodejs Kibana4+ server
+kibana.kibana_server_url=http://localhost:5601
+
+# URL of dashboards list stored by Elastic
+kibana.elastic.dashboard_query_url=http://localhost:9200/.kibana/dashboard/_search?
+</pre>                    
+                </p>
             </subsection>
         </section>
     </body>

@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <properties>
-        <title>Plugin kibana</title>
+        <title>Plugin Kibana</title>
     </properties>
     <body>
-        <section name="Plugin kibana">
-            <!--
+        <section name="Plugin Kibana">
+            
             <p>
                 <img src="images/kibana.png" />
             </p>
-            -->
+            
             <subsection name="Introduction">
-                <p></p>
+                <p>
+                    This plugin let display one or more Kibana dashboards on a portal front end page or
+                    into the back office. It will automatically search for Kibana dashboard into a given
+                    Elastic Search server and displays each one in a tab. 
+                </p>
             </subsection>
             <subsection name="Configuration">
-                <p></p>
-            </subsection>
-            <subsection name="Usage">
-                <p></p>
+                <p>
+                    URLs of the Kibana and the ElasticSearch servers should be defined into the <b>kibana.properties</b> file as below.
+                </p>
+                <p>
+<pre>                    
+# URL of the nodejs Kibana4+ server
+kibana.kibana_server_url=http://localhost:5601
+
+# URL of dashboards list stored by Elastic
+kibana.elastic.dashboard_query_url=http://localhost:9200/.kibana/dashboard/_search?
+</pre>                    
+                </p>
             </subsection>
         </section>
     </body>
