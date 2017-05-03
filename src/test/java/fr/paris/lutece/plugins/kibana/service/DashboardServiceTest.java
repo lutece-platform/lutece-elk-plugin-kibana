@@ -43,7 +43,6 @@ import java.io.IOException;
 
 import java.util.List;
 
-
 /**
  *
  * @author evrardmax
@@ -54,7 +53,7 @@ public class DashboardServiceTest extends LuteceTestCase
      * Test of getListDashboard method, of class DashboardService.
      */
     @Test
-    public void testGetListDashboard(  ) throws IOException
+    public void testGetListDashboard( ) throws IOException
     {
         System.out.println( "getListDashboard" );
 
@@ -62,10 +61,10 @@ public class DashboardServiceTest extends LuteceTestCase
         System.out.println( strJSON );
 
         List<Dashboard> list = DashboardService.getListDashboard( strJSON );
-        assertTrue( list.size(  ) == 2 );
-        assertEquals ( list.get( 0 ).getId(), "a-#-b" );
-        assertEquals ( list.get( 0 ).getTitle(), "a # b" );
-        assertEquals ( list.get( 1 ).getId(), "easy" );
-        assertEquals ( list.get( 1 ).getTitle(), "not so easy" );
+        assertTrue( list.size( ) == 2 );
+        assertEquals( list.get( 0 ).getId( ), "a-#-b" );
+        assertEquals( list.get( 0 ).getTitle( ), "a # b" );
+        assertEquals( list.get( 1 ).getId( ), "easy" );
+        assertEquals( list.get( 1 ).getTitle( ), "not so easy" );
     }
 }

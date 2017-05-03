@@ -45,11 +45,10 @@ import net.sf.json.JSONSerializer;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * DashboardService
  */
-public class DashboardService
+public final class DashboardService
 {
     private static final String NOT_FOUND = "404";
     private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.kibana_server_url";
@@ -58,33 +57,42 @@ public class DashboardService
     private static final String PROPERTY_ELASTIC_DASHBOARD_QUERY_URL = "kibana.elastic.dashboard_query_url";
     private static final String ELASTIC_DASHBOARDS_URL = AppPropertiesService.getProperty( PROPERTY_ELASTIC_DASHBOARD_QUERY_URL );
 
+    
+    /** Private constructor */
+    private DashboardService()
+    {
+    }
+    
     /**
      * Get the list of all dashboards
+     * 
      * @return The list of dashboards
-     * @throws NoKibanaIndexException if no Kibana index was found
-     * @throws NoElasticSearchServerException  if no Elastic server was found
+     * @throws NoKibanaIndexException
+     *             if no Kibana index was found
+     * @throws NoElasticSearchServerException
+     *             if no Elastic server was found
      */
-    public static List<Dashboard> getDashboards(  ) throws NoKibanaIndexException, NoElasticSearchServerException
+    public static List<Dashboard> getDashboards( ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
-        List<Dashboard> listDashboards = new ArrayList<Dashboard>(  );
+        List<Dashboard> listDashboards = new ArrayList<Dashboard>( );
 
-        HttpAccess httpAccess = new HttpAccess(  );
+        HttpAccess httpAccess = new HttpAccess( );
 
         try
         {
             String strJSON = httpAccess.doGet( ELASTIC_DASHBOARDS_URL );
             listDashboards = getListDashboard( strJSON );
         }
-        catch ( HttpAccessException ex )
+        catch( HttpAccessException ex )
         {
-            
-            if( ex.getMessage(  ).indexOf( NOT_FOUND ) > 0 )
+
+            if ( ex.getMessage( ).indexOf( NOT_FOUND ) > 0 )
             {
-                throw new NoKibanaIndexException( ex.getMessage(  ) );
+                throw new NoKibanaIndexException( ex.getMessage( ) );
             }
             else
             {
-                throw new NoElasticSearchServerException(ex.getMessage(  ) );
+                throw new NoElasticSearchServerException( ex.getMessage( ) );
             }
         }
 
@@ -93,23 +101,25 @@ public class DashboardService
 
     /**
      * Get the list of all dashboard
-     * @param strJSON The list of dashboard as JSON provided by Elastic
+     * 
+     * @param strJSON
+     *            The list of dashboard as JSON provided by Elastic
      * @return The list
      */
     public static List<Dashboard> getListDashboard( String strJSON )
     {
-        List<Dashboard> listDashBoard = new ArrayList<Dashboard>(  );
+        List<Dashboard> listDashBoard = new ArrayList<Dashboard>( );
 
         JSONObject obj = (JSONObject) JSONSerializer.toJSON( strJSON );
         JSONArray arr = obj.getJSONObject( "hits" ).getJSONArray( "hits" );
 
-        for ( int i = 0; i < arr.size(  ); i++ )
+        for ( int i = 0; i < arr.size( ); i++ )
         {
             JSONObject document = arr.getJSONObject( i );
 
             if ( ( document != null ) && "dashboard".equals( document.getString( "_type" ) ) )
             {
-                Dashboard dashboard = new Dashboard(  );
+                Dashboard dashboard = new Dashboard( );
                 dashboard.setId( document.getString( "_id" ) );
                 dashboard.setTitle( document.getJSONObject( "_source" ).getString( "title" ) );
                 listDashBoard.add( dashboard );
@@ -121,9 +131,10 @@ public class DashboardService
 
     /**
      * Get Kibana server URL
+     * 
      * @return The URL
      */
-    public static String getKibanaServerUrl(  ) 
+    public static String getKibanaServerUrl( )
     {
         return KIBANA_SERVER_URL;
     }

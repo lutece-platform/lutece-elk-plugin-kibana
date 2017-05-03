@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2017, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.kibana.business;
 
-
 /**
  * Dashboard
  */
@@ -45,13 +44,14 @@ public class Dashboard
     /**
      * @return the Id
      */
-    public String getId(  )
+    public String getId( )
     {
         return _strId;
     }
 
     /**
-     * @param strId the Id to set
+     * @param strId
+     *            the Id to set
      */
     public void setId( String strId )
     {
@@ -61,13 +61,14 @@ public class Dashboard
     /**
      * @return the Title
      */
-    public String getTitle(  )
+    public String getTitle( )
     {
         return _strTitle;
     }
 
     /**
-     * @param strTitle the name
+     * @param strTitle
+     *            the name
      */
     public void setTitle( String strTitle )
     {

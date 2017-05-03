@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013, Mairie de Paris
+ * Copyright (c) 2002-2017, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,6 @@ import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 
-
 /**
  * KibanaDashboard JSP Bean abstract class for JSP Bean
  */
@@ -79,7 +78,9 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
 
     /**
      * Returns the content of the page kibana.
-     * @param request The HTTP request
+     * 
+     * @param request
+     *            The HTTP request
      * @return The view
      */
     @View( value = VIEW_DASHBOARD, defaultView = true )
@@ -87,11 +88,11 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
     {
         try
         {
-            List<Dashboard> listDashboards = DashboardService.getDashboards(  );
+            List<Dashboard> listDashboards = DashboardService.getDashboards( );
 
-            if ( listDashboards.size(  ) > 0 )
+            if ( ! listDashboards.isEmpty() )
             {
-                String strCurrent = listDashboards.get( 0 ).getId(  );
+                String strCurrent = listDashboards.get( 0 ).getId( );
                 String strTab = request.getParameter( PARAMETER_TAB );
 
                 if ( strTab != null )
@@ -99,30 +100,30 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
                     strCurrent = strTab;
                 }
 
-                Map<String, Object> model = getModel(  );
+                Map<String, Object> model = getModel( );
                 model.put( MARK_DASHBOARDS_LIST, listDashboards );
                 model.put( MARK_CURRENT, strCurrent );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
 
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_HOME, model );
             }
             else
             {
-                Map<String, Object> model = getModel(  );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
+                Map<String, Object> model = getModel( );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD, model );
             }
         }
-        catch ( NoKibanaIndexException ex )
+        catch( NoKibanaIndexException ex )
         {
-            Map<String, Object> model = getModel(  );
-            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl(  ) );
+            Map<String, Object> model = getModel( );
+            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
             return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD, model );
         }
-        catch (NoElasticSearchServerException ex)
+        catch( NoElasticSearchServerException ex )
         {
-            Map<String, Object> model = getModel(  );
-            model.put( MARK_ERROR_MESSAGE, ex.getMessage() );
+            Map<String, Object> model = getModel( );
+            model.put( MARK_ERROR_MESSAGE, ex.getMessage( ) );
 
             return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_ELASTICSEARH_ERROR, model );
         }
