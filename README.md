@@ -1,13 +1,13 @@
-
-#Plugin Kibana
+![](http://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=elk-plugin-kibana-deploy)
+# Plugin Kibana
 
 ![](http://dev.lutece.paris.fr/plugins/plugin-kibana/images/kibana.png)
 
-##Introduction
+## Introduction
 
 This plugin let display one or more Kibana dashboards on a portal front end page or into the back office. It will automatically search for Kibana dashboard into a givenElastic Search server and displays each one in a tab.
 
-##Configuration
+## Configuration
 
 URLs of the Kibana and the ElasticSearch servers should be defined into the **kibana.properties** file as below.
 
