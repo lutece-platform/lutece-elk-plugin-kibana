@@ -88,11 +88,11 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
     {
         try
         {
-            List<Dashboard> listDashboards = DashboardService.getDashboards( );
-
+            List<Dashboard> listDashboards = DashboardService.getInstance( ).getDashboards( );
+            listDashboards = DashboardService.getInstance( ).filterDashboardListRBAC( listDashboards, request );
             if ( ! listDashboards.isEmpty() )
             {
-                String strCurrent = listDashboards.get( 0 ).getId( );
+                String strCurrent = listDashboards.get( 0 ).getIdKibanaDashboard( );
                 String strTab = request.getParameter( PARAMETER_TAB );
 
                 if ( strTab != null )
@@ -103,21 +103,21 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
                 Map<String, Object> model = getModel( );
                 model.put( MARK_DASHBOARDS_LIST, listDashboards );
                 model.put( MARK_CURRENT, strCurrent );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
 
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_HOME, model );
             }
             else
             {
                 Map<String, Object> model = getModel( );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD, model );
             }
         }
         catch( NoKibanaIndexException ex )
         {
             Map<String, Object> model = getModel( );
-            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
+            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
             return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD, model );
         }
         catch( NoElasticSearchServerException ex )

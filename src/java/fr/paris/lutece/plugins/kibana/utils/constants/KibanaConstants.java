@@ -39,6 +39,9 @@ package fr.paris.lutece.plugins.kibana.utils.constants;
  */
 public final class KibanaConstants
 {
+    //Plugin
+    public static final String PLUGIN_NAME = "kibana";
+    
     // URL
     public static final String KIBANA_URL_PATH = "kibana.baseUrl";
 
@@ -61,8 +64,13 @@ public final class KibanaConstants
     public static final String MARK_CURRENT = "current";
     public static final String MARK_ERROR_MESSAGE = "error_message";
     public static final String PARAMETER_TAB = "tab";
+    
+    //RBAC 
+    public static final String DASHBOARD_RESOURCE_TYPE = "kibana_dashboard";
+    public static final String DASHBOARD_PERMISSION_VIEW = "VIEW";
 
-
+    //Parameters 
+    public static final String PARAMETER_ID_DASHBOARD = "id_dashboard";
     /**
      * Private constructor
      */

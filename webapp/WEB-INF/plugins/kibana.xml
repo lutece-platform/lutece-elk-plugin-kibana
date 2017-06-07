@@ -28,6 +28,14 @@
             <feature-url>jsp/admin/plugins/kibana/KibanaDashboard.jsp</feature-url>
             <feature-icon-url/>
         </admin-feature>
+        <admin-feature>
+            <feature-id>KIBANA_RBAC_MANAGEMENT</feature-id>
+            <feature-title>kibana.adminFeature.ManageKibana.name</feature-title>
+            <feature-description>kibana.adminFeature.ManageKibana.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/kibana/ManageDashboards.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+      </admin-feature>
     </admin-features>    
 
     <!-- XPages parameters -->
@@ -41,4 +49,13 @@
     <!-- Portlet parameters -->
     <portlets>
     </portlets>
+    
+    <!-- RBAC Resources -->
+    <rbac-resource-types>
+        <rbac-resource-type>
+            <rbac-resource-type-class>
+                fr.paris.lutece.plugins.kibana.service.DashboardIdService 
+            </rbac-resource-type-class>
+        </rbac-resource-type>
+    </rbac-resource-types>
 </plug-in>

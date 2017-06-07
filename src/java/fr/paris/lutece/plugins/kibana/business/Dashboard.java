@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2016, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,36 +30,66 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * License 1.0
- */
+ */ 
 package fr.paris.lutece.plugins.kibana.business;
 
+import fr.paris.lutece.plugins.kibana.utils.constants.KibanaConstants;
+import fr.paris.lutece.portal.service.rbac.RBACResource;
+import java.io.Serializable;
+
 /**
- * Dashboard
- */
-public class Dashboard
+ * This is the business class for the object Dashboard
+ */ 
+public class Dashboard implements Serializable, RBACResource
 {
-    private String _strId;
+    private static final long serialVersionUID = 1L;
+
+    // Variables declarations 
+    private int _nId;
+    
+    private String _strIdKibanaDashboard;
+
     private String _strTitle;
 
     /**
-     * @return the Id
+     * Returns the Id
+     * @return The Id
      */
-    public String getId( )
+    public int getId( )
     {
-        return _strId;
+        return _nId;
     }
 
     /**
-     * @param strId
-     *            the Id to set
-     */
-    public void setId( String strId )
+     * Sets the Id
+     * @param nId The Id
+     */ 
+    public void setId( int nId )
     {
-        _strId = strId;
+        _nId = nId;
+    }
+    
+    /**
+     * Returns the IdKibanaDashboard
+     * @return The IdKibanaDashboard
+     */
+    public String getIdKibanaDashboard( )
+    {
+        return _strIdKibanaDashboard;
     }
 
     /**
-     * @return the Title
+     * Sets the IdKibanaDashboard
+     * @param strIdKibanaDashboard The IdKibanaDashboard
+     */ 
+    public void setIdKibanaDashboard( String strIdKibanaDashboard )
+    {
+        _strIdKibanaDashboard = strIdKibanaDashboard;
+    }
+    
+    /**
+     * Returns the Title
+     * @return The Title
      */
     public String getTitle( )
     {
@@ -67,11 +97,32 @@ public class Dashboard
     }
 
     /**
-     * @param strTitle
-     *            the name
-     */
+     * Sets the Title
+     * @param strTitle The Title
+     */ 
     public void setTitle( String strTitle )
     {
         _strTitle = strTitle;
+    }
+    
+    ////////////////////////////////////////////////////////////////////////////
+    // RBAC Resource implementation
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public String getResourceTypeCode(  )
+    {
+        return KibanaConstants.DASHBOARD_RESOURCE_TYPE;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public String getResourceId(  )
+    {
+        return String.valueOf( _nId ); 
     }
 }

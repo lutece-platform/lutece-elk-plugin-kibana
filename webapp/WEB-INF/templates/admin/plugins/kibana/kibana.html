@@ -4,10 +4,10 @@
         <ul class="nav nav-tabs" role="tablist">
             <#list dashboards_list as dashboard>
                 <#assign class="">
-                <#if dashboard.id = current>
+                <#if dashboard.idKibanaDashboard = current>
                     <#assign class="class=\"active\"">
                 </#if>
-                <li ${class}><a href="jsp/admin/plugins/kibana/KibanaDashboard.jsp?plugin_name=kibana&amp;tab=${dashboard.id?url}">${dashboard.title?html}</a></li>
+                <li ${class}><a href="jsp/admin/plugins/kibana/KibanaDashboard.jsp?plugin_name=kibana&amp;tab=${dashboard.idKibanaDashboard?url}">${dashboard.title?html}</a></li>
             </#list>
         </ul>
         <iframe src="${kibana_server_url}/app/kibana#/dashboard/${current?url}?embed=true" width="100%" height="1000" frameBorder="0" ></iframe>

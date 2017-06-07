@@ -34,6 +34,13 @@
 package fr.paris.lutece.plugins.kibana.service;
 
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
+import fr.paris.lutece.plugins.kibana.business.DashboardHome;
+import fr.paris.lutece.plugins.kibana.utils.constants.KibanaConstants;
+import fr.paris.lutece.portal.business.rbac.RBACHome;
+import fr.paris.lutece.portal.business.user.AdminUser;
+import fr.paris.lutece.portal.service.admin.AdminUserService;
+import fr.paris.lutece.portal.service.rbac.RBACService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
@@ -44,11 +51,12 @@ import net.sf.json.JSONSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * DashboardService
  */
-public final class DashboardService
+public class DashboardService
 {
     private static final String NOT_FOUND = "404";
     private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.kibana_server_url";
@@ -57,10 +65,20 @@ public final class DashboardService
     private static final String PROPERTY_ELASTIC_DASHBOARD_QUERY_URL = "kibana.elastic.dashboard_query_url";
     private static final String ELASTIC_DASHBOARDS_URL = AppPropertiesService.getProperty( PROPERTY_ELASTIC_DASHBOARD_QUERY_URL );
 
+    private static DashboardService _instance = null;
     
     /** Private constructor */
     private DashboardService()
     {
+    }
+    
+    public static DashboardService getInstance( )
+    {
+        if ( _instance == null )
+        {
+            _instance = new DashboardService( );
+        }
+            return _instance;
     }
     
     /**
@@ -72,7 +90,7 @@ public final class DashboardService
      * @throws NoElasticSearchServerException
      *             if no Elastic server was found
      */
-    public static List<Dashboard> getDashboards( ) throws NoKibanaIndexException, NoElasticSearchServerException
+    public List<Dashboard> getDashboards( ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
         List<Dashboard> listDashboards = new ArrayList<Dashboard>( );
 
@@ -106,7 +124,7 @@ public final class DashboardService
      *            The list of dashboard as JSON provided by Elastic
      * @return The list
      */
-    public static List<Dashboard> getListDashboard( String strJSON )
+    public List<Dashboard> getListDashboard( String strJSON )
     {
         List<Dashboard> listDashBoard = new ArrayList<Dashboard>( );
 
@@ -120,7 +138,7 @@ public final class DashboardService
             if ( ( document != null ) && "dashboard".equals( document.getString( "_type" ) ) )
             {
                 Dashboard dashboard = new Dashboard( );
-                dashboard.setId( document.getString( "_id" ) );
+                dashboard.setIdKibanaDashboard( document.getString( "_id" ) );
                 dashboard.setTitle( document.getJSONObject( "_source" ).getString( "title" ) );
                 listDashBoard.add( dashboard );
             }
@@ -134,8 +152,68 @@ public final class DashboardService
      * 
      * @return The URL
      */
-    public static String getKibanaServerUrl( )
+    public String getKibanaServerUrl( )
     {
         return KIBANA_SERVER_URL;
     }
+    
+    /**
+     * Insert all dashboard to database
+     */
+    public void createAllDashboards( )
+    {
+        try
+        {
+           List<Dashboard> listDashboards = getDashboards( ); 
+           for ( Dashboard dashboard : listDashboards )
+           {
+               DashboardHome.createOrUpdate( dashboard );
+           }
+        }
+        catch ( NoElasticSearchServerException e )
+        {
+            AppLogService.error( "Unable to connect to Elasticsearch server", e );
+        }
+        catch ( NoKibanaIndexException e )
+        {
+            AppLogService.error( "Unable to find Kibana index", e );
+        }
+        
+    }
+    
+    /**
+     * Return a dashboard list filtered by RBAC authorizations.
+     * @param listDashboard
+     * @param request
+     * @return a new dashboard list, according to RBAC authorizations.
+     */
+    public List<Dashboard> filterDashboardListRBAC( List<Dashboard> listDashboard, HttpServletRequest request )
+    {
+        List<Dashboard> listFilteredDashboards = new ArrayList<Dashboard>();
+        AdminUser user = AdminUserService.getAdminUser( request );
+        
+        for ( Dashboard dashboard : listDashboard )
+        {
+            Dashboard storedDashboard = DashboardHome.findByKibanaId( dashboard.getIdKibanaDashboard( ) );
+            if ( RBACService.isAuthorized( storedDashboard, KibanaConstants.DASHBOARD_PERMISSION_VIEW, user ) )
+            {
+                listFilteredDashboards.add( dashboard );
+            }
+        }
+        return listFilteredDashboards;
+    }
+    
+    /**
+     * Delete given dashboard and RBACs related to it
+     * @param nIdDashboard 
+     */
+    public void deleteDashboard( int nIdDashboard )
+    {
+        //First delete RBAC Resource related to given id dashboard
+        RBACHome.removeForResource( KibanaConstants.DASHBOARD_RESOURCE_TYPE, Integer.toString( nIdDashboard ) );
+        
+        //Then delete Dashboard
+        DashboardHome.delete( nIdDashboard );
+    }
+    
 }

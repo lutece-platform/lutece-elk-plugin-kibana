@@ -60,7 +60,7 @@ public class DashboardServiceTest extends LuteceTestCase
         String strJSON = Utils.getFileContent( "search_dashboard.json" );
         System.out.println( strJSON );
 
-        List<Dashboard> list = DashboardService.getListDashboard( strJSON );
+        List<Dashboard> list = DashboardService.getInstance().getListDashboard( strJSON );
         assertTrue( list.size( ) == 2 );
         assertEquals( list.get( 0 ).getId( ), "a-#-b" );
         assertEquals( list.get( 0 ).getTitle( ), "a # b" );

@@ -75,11 +75,11 @@ public class KibanaApp extends MVCApplication
     {
         try
         {
-            List<Dashboard> listDashboards = DashboardService.getDashboards( );
+            List<Dashboard> listDashboards = DashboardService.getInstance( ).getDashboards( );
 
             if ( ! listDashboards.isEmpty() )
             {
-                String strCurrent = listDashboards.get( 0 ).getId( );
+                String strCurrent = listDashboards.get( 0 ).getIdKibanaDashboard( );
                 String strTab = request.getParameter( PARAMETER_TAB );
 
                 if ( strTab != null )
@@ -90,21 +90,21 @@ public class KibanaApp extends MVCApplication
                 Map<String, Object> model = getModel( );
                 model.put( MARK_DASHBOARDS_LIST, listDashboards );
                 model.put( MARK_CURRENT, strCurrent );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
 
                 return getXPage( TEMPLATE_XPAGE, request.getLocale( ), model );
             }
             else
             {
                 Map<String, Object> model = getModel( );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
                 return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale( ), model );
             }
         }
         catch( NoKibanaIndexException ex )
         {
             Map<String, Object> model = getModel( );
-            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getKibanaServerUrl( ) );
+            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
             return getXPage( TEMPLATE_NO_DASHBOARD, request.getLocale( ), model );
         }
         catch( NoElasticSearchServerException ex )
