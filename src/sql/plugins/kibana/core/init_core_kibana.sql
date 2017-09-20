@@ -13,8 +13,8 @@ INSERT INTO core_admin_right (id_right,name,level_right,admin_url,description,is
 --
 -- Data for table core_user_right
 --
-DELETE FROM core_user_right WHERE id_right = 'KIBANA_RBAC_MANAGEMENT';
-INSERT INTO core_user_right (id_right,id_user) VALUES ('KIBANA_RBAC_MANAGEMENT',1);
+DELETE FROM core_user_right WHERE id_right = 'KIBANA_MANAGEMENT';
+INSERT INTO core_user_right (id_right,id_user) VALUES ('KIBANA_MANAGEMENT',1);
 
 DELETE FROM core_user_right WHERE id_right = 'KIBANA_RBAC_MANAGEMENT';
 INSERT INTO core_user_right (id_right,id_user) VALUES ('KIBANA_RBAC_MANAGEMENT',1);
