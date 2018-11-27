@@ -129,17 +129,17 @@ public class DashboardService
         List<Dashboard> listDashBoard = new ArrayList<Dashboard>( );
 
         JSONObject obj = (JSONObject) JSONSerializer.toJSON( strJSON );
-        JSONArray arr = obj.getJSONObject( "hits" ).getJSONArray( "hits" );
+        JSONArray arr = obj.getJSONArray( "saved_objects" );
 
         for ( int i = 0; i < arr.size( ); i++ )
         {
             JSONObject document = arr.getJSONObject( i );
 
-            if ( ( document != null ) && "dashboard".equals( document.getString( "_type" ) ) )
+            if ( ( document != null ) && "dashboard".equals( document.getString( "type" ) ) )
             {
                 Dashboard dashboard = new Dashboard( );
-                dashboard.setIdKibanaDashboard( document.getString( "_id" ) );
-                dashboard.setTitle( document.getJSONObject( "_source" ).getString( "title" ) );
+                dashboard.setIdKibanaDashboard( document.getString( "id" ) );
+                dashboard.setTitle( document.getJSONObject( "attributes" ).getString( "title" ) );
                 listDashBoard.add( dashboard );
             }
         }
