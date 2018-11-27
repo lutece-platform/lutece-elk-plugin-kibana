@@ -62,9 +62,9 @@ public class DashboardServiceTest extends LuteceTestCase
 
         List<Dashboard> list = DashboardService.getInstance().getListDashboard( strJSON );
         assertTrue( list.size( ) == 2 );
-        assertEquals( list.get( 0 ).getId( ), "a-#-b" );
+        assertEquals( list.get( 0 ).getIdKibanaDashboard( ), "a-#-b" );
         assertEquals( list.get( 0 ).getTitle( ), "a # b" );
-        assertEquals( list.get( 1 ).getId( ), "easy" );
+        assertEquals( list.get( 1 ).getIdKibanaDashboard( ), "easy" );
         assertEquals( list.get( 1 ).getTitle( ), "not so easy" );
     }
 }
