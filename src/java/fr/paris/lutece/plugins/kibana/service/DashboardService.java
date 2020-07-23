@@ -126,7 +126,7 @@ public class DashboardService {
         for (int i = 0; i < arr.size(); i++) {
             JSONObject document = arr.getJSONObject(i);
 
-            if ((document != null) && "doc".equals(document.getString("_type")))
+            if ((document != null) && ("doc".equals(document.getString("_type") || "_doc".equals(document.getString("_type")))))
             {
                 Dashboard dashboard = new Dashboard();
                 dashboard.setIdKibanaDashboard( document.getString("_id").replace( "dashboard:", "") );
