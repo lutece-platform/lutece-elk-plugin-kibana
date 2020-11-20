@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2016, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
  *
  * License 1.0
  */
- package fr.paris.lutece.plugins.kibana.business;
+package fr.paris.lutece.plugins.kibana.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -52,14 +52,16 @@ public final class DashboardHome
     /**
      * Private constructor - this class need not be instantiated
      */
-    private DashboardHome(  )
+    private DashboardHome( )
     {
     }
 
     /**
      * Create an instance of the dashboard class
-     * @param dashboard The instance of the Dashboard which contains the informations to store
-     * @return The  instance of dashboard which has been created with its primary key.
+     * 
+     * @param dashboard
+     *            The instance of the Dashboard which contains the informations to store
+     * @return The instance of dashboard which has been created with its primary key.
      */
     public static Dashboard create( Dashboard dashboard )
     {
@@ -70,61 +72,69 @@ public final class DashboardHome
 
     /**
      * Returns an instance of a dashboard whose identifier is specified in parameter
-     * @param nKey The dashboard primary key
+     * 
+     * @param nKey
+     *            The dashboard primary key
      * @return an instance of Dashboard
      */
     public static Dashboard findByPrimaryKey( int nKey )
     {
-        return _dao.load( nKey, _plugin);
+        return _dao.load( nKey, _plugin );
     }
 
     /**
      * Load the data of all the dashboard objects and returns them as a list
+     * 
      * @return the list which contains the data of all the dashboard objects
      */
     public static List<Dashboard> getDashboardsList( )
     {
         return _dao.selectDashboardsList( _plugin );
     }
-    
+
     /**
      * Load the id of all the dashboard objects and returns them as a list
+     * 
      * @return the list which contains the id of all the dashboard objects
      */
     public static List<Integer> getIdDashboardsList( )
     {
         return _dao.selectIdDashboardsList( _plugin );
     }
-    
+
     /**
      * Load the data of all the dashboard objects and returns them as a referenceList
+     * 
      * @return the referenceList which contains the data of all the dashboard objects
      */
     public static ReferenceList getDashboardsReferenceList( )
     {
-        return _dao.selectDashboardsReferenceList(_plugin );
+        return _dao.selectDashboardsReferenceList( _plugin );
     }
-    
+
     /**
      * Delete the given dashboard
-     * @param nIdDashboard The dashboard id
+     * 
+     * @param nIdDashboard
+     *            The dashboard id
      */
     public static void delete( int nIdDashboard )
     {
         _dao.delete( nIdDashboard, _plugin );
     }
-    
+
     /**
      * Delete all kibanas dashboards
      */
-    
+
     public static void deleteAllKibanaDasboards( )
     {
         _dao.deleteAll( _plugin );
     }
-    
+
     /**
      * Create or update given dashboard
+     * 
      * @param dashboard
      * @return the created or updated dashboard
      */
@@ -140,9 +150,10 @@ public final class DashboardHome
         }
         return dashboard;
     }
-    
+
     /**
      * Find Kibana dashboard with given kibana dashboard id
+     * 
      * @param strIdKibana
      * @return the dashboard found
      */
@@ -151,4 +162,3 @@ public final class DashboardHome
         return _dao.loadByKibanaId( strIdKibana, _plugin );
     }
 }
-

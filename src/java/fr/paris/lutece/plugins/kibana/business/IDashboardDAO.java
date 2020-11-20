@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2016, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,6 @@
  *
  * License 1.0
  */
- 
 package fr.paris.lutece.plugins.kibana.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -45,74 +44,97 @@ public interface IDashboardDAO
 {
     /**
      * Insert a new record in the table.
-     * @param dashboard instance of the Dashboard object to insert
-     * @param plugin the Plugin
+     * 
+     * @param dashboard
+     *            instance of the Dashboard object to insert
+     * @param plugin
+     *            the Plugin
      */
     void insert( Dashboard dashboard, Plugin plugin );
 
     /**
      * Load the data from the table
-     * @param nKey The identifier of the dashboard
-     * @param plugin the Plugin
+     * 
+     * @param nKey
+     *            The identifier of the dashboard
+     * @param plugin
+     *            the Plugin
      * @return The instance of the dashboard
      */
     Dashboard load( int nKey, Plugin plugin );
-    
+
     /**
      * Load the data from the table
-     * @param strIdKibana The identifier of the dashboard in Kibana
-     * @param plugin the Plugin
+     * 
+     * @param strIdKibana
+     *            The identifier of the dashboard in Kibana
+     * @param plugin
+     *            the Plugin
      * @return The instance of the dashboard
      */
     Dashboard loadByKibanaId( String strIdKibana, Plugin plugin );
 
     /**
      * Load the data of all the dashboard objects and returns them as a list
-     * @param plugin the Plugin
+     * 
+     * @param plugin
+     *            the Plugin
      * @return The list which contains the data of all the dashboard objects
      */
     List<Dashboard> selectDashboardsList( Plugin plugin );
-    
+
     /**
      * Load the id of all the dashboard objects and returns them as a list
-     * @param plugin the Plugin
+     * 
+     * @param plugin
+     *            the Plugin
      * @return The list which contains the id of all the dashboard objects
      */
     List<Integer> selectIdDashboardsList( Plugin plugin );
-    
+
     /**
      * Load the data of all the dashboard objects and returns them as a referenceList
-     * @param plugin the Plugin
+     * 
+     * @param plugin
+     *            the Plugin
      * @return The referenceList which contains the data of all the dashboard objects
      */
     ReferenceList selectDashboardsReferenceList( Plugin plugin );
-    
+
     /**
      * Update the record in the table
-     * @param dashboard the reference of the Dashboard
-     * @param plugin the Plugin
+     * 
+     * @param dashboard
+     *            the reference of the Dashboard
+     * @param plugin
+     *            the Plugin
      */
     void store( Dashboard dashboard, Plugin plugin );
-    
-     /**
+
+    /**
      * Delete the given dashboard
-     * @param nIdDashboard the dashboard id to delete
-     * @param plugin the Plugin
+     * 
+     * @param nIdDashboard
+     *            the dashboard id to delete
+     * @param plugin
+     *            the Plugin
      */
     void delete( int nIdDashboard, Plugin plugin );
-    
+
     /**
      * Delete all the dashboards in the table
-     * @param plugin 
+     * 
+     * @param plugin
      */
     void deleteAll( Plugin plugin );
-    
+
     /**
      * check if given dashboard exists, based on Kibana dashboard id
+     * 
      * @param dashboard
      * @param plugin
      * @return true if exists, false otherwise
      */
-    boolean isDashboardExists ( Dashboard dashboard, Plugin plugin );
-    
+    boolean isDashboardExists( Dashboard dashboard, Plugin plugin );
+
 }

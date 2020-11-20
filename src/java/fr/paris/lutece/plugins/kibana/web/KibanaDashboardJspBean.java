@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -90,7 +90,7 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
         {
             List<Dashboard> listDashboards = DashboardService.getInstance( ).getDashboards( );
             listDashboards = DashboardService.getInstance( ).filterDashboardListRBAC( listDashboards, request );
-            if ( ! listDashboards.isEmpty() )
+            if ( !listDashboards.isEmpty( ) )
             {
                 String strCurrent = listDashboards.get( 0 ).getIdKibanaDashboard( );
                 String strTab = request.getParameter( PARAMETER_TAB );

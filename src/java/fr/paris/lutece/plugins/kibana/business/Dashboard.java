@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2016, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * License 1.0
- */ 
+ */
 package fr.paris.lutece.plugins.kibana.business;
 
 import fr.paris.lutece.plugins.kibana.utils.constants.KibanaConstants;
@@ -39,20 +39,21 @@ import java.io.Serializable;
 
 /**
  * This is the business class for the object Dashboard
- */ 
+ */
 public class Dashboard implements Serializable, RBACResource
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private int _nId;
-    
+
     private String _strIdKibanaDashboard;
 
     private String _strTitle;
 
     /**
      * Returns the Id
+     * 
      * @return The Id
      */
     public int getId( )
@@ -62,15 +63,18 @@ public class Dashboard implements Serializable, RBACResource
 
     /**
      * Sets the Id
-     * @param nId The Id
-     */ 
+     * 
+     * @param nId
+     *            The Id
+     */
     public void setId( int nId )
     {
         _nId = nId;
     }
-    
+
     /**
      * Returns the IdKibanaDashboard
+     * 
      * @return The IdKibanaDashboard
      */
     public String getIdKibanaDashboard( )
@@ -80,15 +84,18 @@ public class Dashboard implements Serializable, RBACResource
 
     /**
      * Sets the IdKibanaDashboard
-     * @param strIdKibanaDashboard The IdKibanaDashboard
-     */ 
+     * 
+     * @param strIdKibanaDashboard
+     *            The IdKibanaDashboard
+     */
     public void setIdKibanaDashboard( String strIdKibanaDashboard )
     {
         _strIdKibanaDashboard = strIdKibanaDashboard;
     }
-    
+
     /**
      * Returns the Title
+     * 
      * @return The Title
      */
     public String getTitle( )
@@ -98,13 +105,15 @@ public class Dashboard implements Serializable, RBACResource
 
     /**
      * Sets the Title
-     * @param strTitle The Title
-     */ 
+     * 
+     * @param strTitle
+     *            The Title
+     */
     public void setTitle( String strTitle )
     {
         _strTitle = strTitle;
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////
     // RBAC Resource implementation
 
@@ -112,7 +121,7 @@ public class Dashboard implements Serializable, RBACResource
      * {@inheritDoc }
      */
     @Override
-    public String getResourceTypeCode(  )
+    public String getResourceTypeCode( )
     {
         return KibanaConstants.DASHBOARD_RESOURCE_TYPE;
     }
@@ -121,8 +130,8 @@ public class Dashboard implements Serializable, RBACResource
      * {@inheritDoc }
      */
     @Override
-    public String getResourceId(  )
+    public String getResourceId( )
     {
-        return String.valueOf( _nId ); 
+        return String.valueOf( _nId );
     }
 }

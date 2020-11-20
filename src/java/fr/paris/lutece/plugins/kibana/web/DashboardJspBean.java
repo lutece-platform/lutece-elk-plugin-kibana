@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2016, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,46 +63,49 @@ public class DashboardJspBean extends ManageKibanaJspBean
     // Markers
     private static final String MARK_DASHBOARD_LIST = "dashboard_list";
 
-    //JSP
+    // JSP
     private static final String JSP_MANAGE_DASHBOARDS = "jsp/admin/plugins/kibana/ManageDashboards.jsp";
 
-    //Messages
+    // Messages
     private static final String MESSAGE_CONFIRM_REMOVE_DASHBOARD = "kibana.remove_dashboard.confirm";
-    
+
     // Views
     private static final String VIEW_MANAGE_DASHBOARDS = "manageDashboards";
-    
-    // Actions 
+
+    // Actions
     private static final String ACTION_IMPORT_DASHBOARDS = "importDashboards";
     private static final String ACTION_CONFIRM_REMOVE_DASHBOARD = "confirmRemoveDashboard";
     private static final String ACTION_REMOVE_DASHBOARD = "removeDashboard";
-    
+
     /**
      * Build the Manage View
-     * @param request The HTTP request
+     * 
+     * @param request
+     *            The HTTP request
      * @return The page
      */
     @View( value = VIEW_MANAGE_DASHBOARDS, defaultView = true )
     public String getManageDashboards( HttpServletRequest request )
     {
-        List<Dashboard> listDashboards = DashboardHome.getDashboardsList(  );
+        List<Dashboard> listDashboards = DashboardHome.getDashboardsList( );
         Map<String, Object> model = getPaginatedListModel( request, MARK_DASHBOARD_LIST, listDashboards, JSP_MANAGE_DASHBOARDS );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_DASHBOARDS, TEMPLATE_MANAGE_DASHBOARDS, model );
     }
-    
+
     /**
      * Import all dashboards from JSON to database. Insert only if it didnt exist.
+     * 
      * @param request
-     * @return 
+     * @return
      */
-    @Action ( value = ACTION_IMPORT_DASHBOARDS )
+    @Action( value = ACTION_IMPORT_DASHBOARDS )
     public String doImportDashboards( HttpServletRequest request )
     {
         DashboardService.getInstance( ).createAllDashboards( );
         return redirectView( request, VIEW_MANAGE_DASHBOARDS );
     }
-    
+
     /**
      * Ask admin user for confirmation about removing dashboard
      *
@@ -117,27 +120,25 @@ public class DashboardJspBean extends ManageKibanaJspBean
         UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_DASHBOARD ) );
         url.addParameter( KibanaConstants.PARAMETER_ID_DASHBOARD, nId );
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_DASHBOARD, url.getUrl( ),
-                AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_DASHBOARD, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
 
         return redirect( request, strMessageUrl );
     }
-    
+
     /**
      * Import all dashboards from JSON to database. Insert only if it didnt exist.
+     * 
      * @param request
-     * @return 
+     * @return
      */
-    @Action ( value = ACTION_REMOVE_DASHBOARD )
+    @Action( value = ACTION_REMOVE_DASHBOARD )
     public String doDeleteDashboard( HttpServletRequest request )
     {
         int nIdDashboard = Integer.parseInt( request.getParameter( KibanaConstants.PARAMETER_ID_DASHBOARD ) );
 
         DashboardService.getInstance( ).deleteDashboard( nIdDashboard );
-        
+
         return redirectView( request, VIEW_MANAGE_DASHBOARDS );
     }
-    
-    
 
 }

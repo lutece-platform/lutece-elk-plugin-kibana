@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ public class DashboardServiceTest extends LuteceTestCase
         String strJSON = Utils.getFileContent( "search_dashboard.json" );
         System.out.println( strJSON );
 
-        List<Dashboard> list = DashboardService.getInstance().getListDashboard( strJSON );
+        List<Dashboard> list = DashboardService.getInstance( ).getListDashboard( strJSON );
         assertTrue( list.size( ) == 2 );
         assertEquals( list.get( 0 ).getIdKibanaDashboard( ), "87a95c20-f257-11e8-b738-7fcdd48fbabe" );
         assertEquals( list.get( 0 ).getTitle( ), "a # b" );

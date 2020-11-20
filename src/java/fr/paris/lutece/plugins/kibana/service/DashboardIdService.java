@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,21 +48,20 @@ public class DashboardIdService extends ResourceIdService
 {
     private static final String PROPERTY_LABEL_DASHBOARD_RESOURCE_TYPE = "kibana.rbac.dashboard.resourceType";
     private static final String PROPERTY_LABEL_VIEW = "kibana.rbac.dashboard.permission.view";
-    
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public void register(  )
+    public void register( )
     {
-        ResourceType rt = new ResourceType(  );
-        rt.setResourceIdServiceClass( DashboardIdService .class.getName(  ) );
+        ResourceType rt = new ResourceType( );
+        rt.setResourceIdServiceClass( DashboardIdService.class.getName( ) );
         rt.setPluginName( KibanaConstants.PLUGIN_NAME );
         rt.setResourceTypeKey( KibanaConstants.DASHBOARD_RESOURCE_TYPE );
         rt.setResourceTypeLabelKey( PROPERTY_LABEL_DASHBOARD_RESOURCE_TYPE );
 
-        Permission p = new Permission(  );
+        Permission p = new Permission( );
         p.setPermissionKey( KibanaConstants.DASHBOARD_PERMISSION_VIEW );
         p.setPermissionTitleKey( PROPERTY_LABEL_VIEW );
         rt.registerPermission( p );
@@ -76,7 +75,7 @@ public class DashboardIdService extends ResourceIdService
     @Override
     public ReferenceList getResourceIdList( Locale locale )
     {
-        List<Dashboard>  listDashboards = DashboardHome.getDashboardsList( );
+        List<Dashboard> listDashboards = DashboardHome.getDashboardsList( );
 
         return ReferenceList.convert( listDashboards, "id", "title", true );
     }
@@ -89,6 +88,6 @@ public class DashboardIdService extends ResourceIdService
     {
         Dashboard dashboard = DashboardHome.findByPrimaryKey( Integer.parseInt( strId ) );
 
-        return dashboard.getTitle(  );
+        return dashboard.getTitle( );
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,8 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * DashboardService
  */
-public class DashboardService {
+public class DashboardService
+{
     private static final String NOT_FOUND = "404";
     private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.kibana_server_url";
     private static final String DEFAULT_KIBANA_URL = "http://localhost:5601";
@@ -75,12 +76,15 @@ public class DashboardService {
     private static RequestAuthenticator _authenticator = new BasicAuthorizationAuthenticator( KIBANA_SERVER_LOGIN, KIBANA_SERVER_PWD );
 
     /** Private constructor */
-    private DashboardService() {
+    private DashboardService( )
+    {
     }
 
-    public static DashboardService getInstance() {
-        if (_instance == null) {
-            _instance = new DashboardService();
+    public static DashboardService getInstance( )
+    {
+        if ( _instance == null )
+        {
+            _instance = new DashboardService( );
         }
         return _instance;
     }
@@ -89,26 +93,34 @@ public class DashboardService {
      * Get the list of all dashboards
      * 
      * @return The list of dashboards
-     * @throws NoKibanaIndexException         if no Kibana index was found
-     * @throws NoElasticSearchServerException if no Elastic server was found
+     * @throws NoKibanaIndexException
+     *             if no Kibana index was found
+     * @throws NoElasticSearchServerException
+     *             if no Elastic server was found
      */
-    public List<Dashboard> getDashboards() throws NoKibanaIndexException, NoElasticSearchServerException {
-        List<Dashboard> listDashboards = new ArrayList<Dashboard>();
+    public List<Dashboard> getDashboards( ) throws NoKibanaIndexException, NoElasticSearchServerException
+    {
+        List<Dashboard> listDashboards = new ArrayList<Dashboard>( );
 
-        HttpAccess httpAccess = new HttpAccess();
-        Map<String, String> headers = new HashMap<>();
-        headers.put("kbn-xsrf", "true");
+        HttpAccess httpAccess = new HttpAccess( );
+        Map<String, String> headers = new HashMap<>( );
+        headers.put( "kbn-xsrf", "true" );
 
-        try {
+        try
+        {
             String strJSON = httpAccess.doGet( KIBANA_SERVER_URL + KIBANA_DASHBOARD_LIST_URL, _authenticator, null, headers );
-            listDashboards = getListDashboard(strJSON);
-        } catch (HttpAccessException ex) 
+            listDashboards = getListDashboard( strJSON );
+        }
+        catch( HttpAccessException ex )
         {
 
-            if (ex.getMessage().indexOf(NOT_FOUND) > 0) {
-                throw new NoKibanaIndexException(ex.getMessage());
-            } else {
-                throw new NoElasticSearchServerException(ex.getMessage());
+            if ( ex.getMessage( ).indexOf( NOT_FOUND ) > 0 )
+            {
+                throw new NoKibanaIndexException( ex.getMessage( ) );
+            }
+            else
+            {
+                throw new NoElasticSearchServerException( ex.getMessage( ) );
             }
         }
 
@@ -118,23 +130,26 @@ public class DashboardService {
     /**
      * Get the list of all dashboard
      * 
-     * @param strJSON The list of dashboard as JSON provided by Elastic
+     * @param strJSON
+     *            The list of dashboard as JSON provided by Elastic
      * @return The list
      */
-    public List<Dashboard> getListDashboard(String strJSON) {
-        List<Dashboard> listDashBoard = new ArrayList<Dashboard>();
+    public List<Dashboard> getListDashboard( String strJSON )
+    {
+        List<Dashboard> listDashBoard = new ArrayList<Dashboard>( );
 
-        JSONObject obj = (JSONObject) JSONSerializer.toJSON(strJSON);
+        JSONObject obj = (JSONObject) JSONSerializer.toJSON( strJSON );
 
-        JSONArray arr = obj.getJSONArray("saved_objects");
+        JSONArray arr = obj.getJSONArray( "saved_objects" );
 
-        for (int i = 0; i < arr.size(); i++) {
-            JSONObject document = arr.getJSONObject(i);
+        for ( int i = 0; i < arr.size( ); i++ )
+        {
+            JSONObject document = arr.getJSONObject( i );
 
-            Dashboard dashboard = new Dashboard();
-            dashboard.setIdKibanaDashboard( document.getString("id") );
-            dashboard.setTitle(document.getJSONObject("attributes").getString("title") );
-            listDashBoard.add(dashboard);
+            Dashboard dashboard = new Dashboard( );
+            dashboard.setIdKibanaDashboard( document.getString( "id" ) );
+            dashboard.setTitle( document.getJSONObject( "attributes" ).getString( "title" ) );
+            listDashBoard.add( dashboard );
         }
 
         return listDashBoard;
@@ -145,23 +160,31 @@ public class DashboardService {
      * 
      * @return The URL
      */
-    public String getKibanaServerUrl() {
+    public String getKibanaServerUrl( )
+    {
         return KIBANA_SERVER_URL;
     }
 
     /**
      * Insert all dashboard to database
      */
-    public void createAllDashboards() {
-        try {
-            List<Dashboard> listDashboards = getDashboards();
-            for (Dashboard dashboard : listDashboards) {
-                DashboardHome.createOrUpdate(dashboard);
+    public void createAllDashboards( )
+    {
+        try
+        {
+            List<Dashboard> listDashboards = getDashboards( );
+            for ( Dashboard dashboard : listDashboards )
+            {
+                DashboardHome.createOrUpdate( dashboard );
             }
-        } catch (NoElasticSearchServerException e) {
-            AppLogService.error("Unable to connect to Elasticsearch server", e);
-        } catch (NoKibanaIndexException e) {
-            AppLogService.error("Unable to find Kibana index", e);
+        }
+        catch( NoElasticSearchServerException e )
+        {
+            AppLogService.error( "Unable to connect to Elasticsearch server", e );
+        }
+        catch( NoKibanaIndexException e )
+        {
+            AppLogService.error( "Unable to find Kibana index", e );
         }
 
     }
@@ -173,14 +196,17 @@ public class DashboardService {
      * @param request
      * @return a new dashboard list, according to RBAC authorizations.
      */
-    public List<Dashboard> filterDashboardListRBAC(List<Dashboard> listDashboard, HttpServletRequest request) {
-        List<Dashboard> listFilteredDashboards = new ArrayList<Dashboard>();
-        AdminUser user = AdminUserService.getAdminUser(request);
+    public List<Dashboard> filterDashboardListRBAC( List<Dashboard> listDashboard, HttpServletRequest request )
+    {
+        List<Dashboard> listFilteredDashboards = new ArrayList<Dashboard>( );
+        AdminUser user = AdminUserService.getAdminUser( request );
 
-        for (Dashboard dashboard : listDashboard) {
-            Dashboard storedDashboard = DashboardHome.findByKibanaId(dashboard.getIdKibanaDashboard());
-            if (RBACService.isAuthorized(storedDashboard, KibanaConstants.DASHBOARD_PERMISSION_VIEW, user)) {
-                listFilteredDashboards.add(dashboard);
+        for ( Dashboard dashboard : listDashboard )
+        {
+            Dashboard storedDashboard = DashboardHome.findByKibanaId( dashboard.getIdKibanaDashboard( ) );
+            if ( RBACService.isAuthorized( storedDashboard, KibanaConstants.DASHBOARD_PERMISSION_VIEW, user ) )
+            {
+                listFilteredDashboards.add( dashboard );
             }
         }
         return listFilteredDashboards;
@@ -191,12 +217,13 @@ public class DashboardService {
      * 
      * @param nIdDashboard
      */
-    public void deleteDashboard(int nIdDashboard) {
+    public void deleteDashboard( int nIdDashboard )
+    {
         // First delete RBAC Resource related to given id dashboard
-        RBACHome.removeForResource(KibanaConstants.DASHBOARD_RESOURCE_TYPE, Integer.toString(nIdDashboard));
+        RBACHome.removeForResource( KibanaConstants.DASHBOARD_RESOURCE_TYPE, Integer.toString( nIdDashboard ) );
 
         // Then delete Dashboard
-        DashboardHome.delete(nIdDashboard);
+        DashboardHome.delete( nIdDashboard );
     }
 
 }
