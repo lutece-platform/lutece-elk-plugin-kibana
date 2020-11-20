@@ -44,7 +44,9 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
-
+import fr.paris.lutece.util.signrequest.BasicAuthorizationAuthenticator;
+import fr.paris.lutece.util.signrequest.RequestAuthenticator;
+import freemarker.template.utility.StringUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -63,13 +65,14 @@ public class DashboardService {
     private static final String NOT_FOUND = "404";
     private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.kibana_server_url";
     private static final String DEFAULT_KIBANA_URL = "http://localhost:5601";
-    private static final String KIBANA_SERVER_URL = AppPropertiesService.getProperty(PROPERTY_KIBANA_SERVER_URL,
-            DEFAULT_KIBANA_URL);
-    private static final String PROPERTY_ELASTIC_DASHBOARD_QUERY_URL = "kibana.elastic.dashboard_query_url";
-    private static final String ELASTIC_DASHBOARDS_URL = AppPropertiesService
-            .getProperty(PROPERTY_ELASTIC_DASHBOARD_QUERY_URL);
-
+    private static final String KIBANA_SERVER_URL = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_URL, DEFAULT_KIBANA_URL );
+    private static final String KIBANA_DASHBOARD_LIST_URL = "/api/saved_objects/_find?type=dashboard";
+    private static final String PROPERTY_KIBANA_SERVER_LOGIN = "kibana.kibana_server.login";
+    private static final String PROPERTY_KIBANA_SERVER_PWD = "kibana.kibana_server.pwd";
+    private static final String KIBANA_SERVER_LOGIN = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_LOGIN );
+    private static final String KIBANA_SERVER_PWD = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_PWD );
     private static DashboardService _instance = null;
+    private static RequestAuthenticator _authenticator = new BasicAuthorizationAuthenticator( KIBANA_SERVER_LOGIN, KIBANA_SERVER_PWD );
 
     /** Private constructor */
     private DashboardService() {
@@ -93,9 +96,11 @@ public class DashboardService {
         List<Dashboard> listDashboards = new ArrayList<Dashboard>();
 
         HttpAccess httpAccess = new HttpAccess();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("kbn-xsrf", "true");
+
         try {
-            Map<String, String> mapParams = new HashMap<>();
-            String strJSON = httpAccess.doPost(ELASTIC_DASHBOARDS_URL, mapParams );
+            String strJSON = httpAccess.doGet( KIBANA_SERVER_URL + KIBANA_DASHBOARD_LIST_URL, _authenticator, null, headers );
             listDashboards = getListDashboard(strJSON);
         } catch (HttpAccessException ex) 
         {
@@ -121,18 +126,15 @@ public class DashboardService {
 
         JSONObject obj = (JSONObject) JSONSerializer.toJSON(strJSON);
 
-        JSONArray arr = obj.getJSONObject("hits").getJSONArray("hits");
+        JSONArray arr = obj.getJSONArray("saved_objects");
 
         for (int i = 0; i < arr.size(); i++) {
             JSONObject document = arr.getJSONObject(i);
 
-            if ((document != null) && "doc".equals(document.getString("_type")))
-            {
-                Dashboard dashboard = new Dashboard();
-                dashboard.setIdKibanaDashboard( document.getString("_id").replace( "dashboard:", "") );
-                dashboard.setTitle(document.getJSONObject("_source").getJSONObject("dashboard").getString("title") );
-                listDashBoard.add(dashboard);
-            }
+            Dashboard dashboard = new Dashboard();
+            dashboard.setIdKibanaDashboard( document.getString("id") );
+            dashboard.setTitle(document.getJSONObject("attributes").getString("title") );
+            listDashBoard.add(dashboard);
         }
 
         return listDashBoard;
