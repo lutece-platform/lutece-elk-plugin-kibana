@@ -50,12 +50,10 @@ import freemarker.template.utility.StringUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -68,8 +66,10 @@ public class DashboardService
     private static final String DEFAULT_KIBANA_URL = "http://localhost:5601";
     private static final String KIBANA_SERVER_URL = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_URL, DEFAULT_KIBANA_URL );
     private static final String KIBANA_DASHBOARD_LIST_URL = "/api/saved_objects/_find?type=dashboard";
+    private static final String PROPERTY_KIBANA_SERVER_SPACE_ID = "kibana.kibana_server.space.id";
     private static final String PROPERTY_KIBANA_SERVER_LOGIN = "kibana.kibana_server.login";
     private static final String PROPERTY_KIBANA_SERVER_PWD = "kibana.kibana_server.pwd";
+    private static final String KIBANA_SERVER_SPACE_ID = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_SPACE_ID );
     private static final String KIBANA_SERVER_LOGIN = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_LOGIN );
     private static final String KIBANA_SERVER_PWD = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_PWD );
     private static DashboardService _instance = null;
@@ -101,19 +101,24 @@ public class DashboardService
     public List<Dashboard> getDashboards( ) throws NoKibanaIndexException, NoElasticSearchServerException
     {
         List<Dashboard> listDashboards = new ArrayList<Dashboard>( );
-
         HttpAccess httpAccess = new HttpAccess( );
         Map<String, String> headers = new HashMap<>( );
         headers.put( "kbn-xsrf", "true" );
-
         try
         {
-            String strJSON = httpAccess.doGet( KIBANA_SERVER_URL + KIBANA_DASHBOARD_LIST_URL, _authenticator, null, headers );
-            listDashboards = getListDashboard( strJSON );
+            String strJSON = httpAccess.doGet( KIBANA_SERVER_URL + "/s/" + KIBANA_SERVER_SPACE_ID + KIBANA_DASHBOARD_LIST_URL, _authenticator, null, headers );
+            List<Dashboard> listAvailableDashboards = getListDashboard( strJSON );
+            for ( Dashboard availbaleDashboard : listAvailableDashboards )
+            {
+                Dashboard dashboard = DashboardHome.findByKibanaId( availbaleDashboard.getIdKibanaDashboard( ) );
+                if ( dashboard != null )
+                {
+                    listDashboards.add( dashboard );
+                }
+            }
         }
         catch( HttpAccessException ex )
         {
-
             if ( ex.getMessage( ).indexOf( NOT_FOUND ) > 0 )
             {
                 throw new NoKibanaIndexException( ex.getMessage( ) );
@@ -123,7 +128,6 @@ public class DashboardService
                 throw new NoElasticSearchServerException( ex.getMessage( ) );
             }
         }
-
         return listDashboards;
     }
 
@@ -137,21 +141,16 @@ public class DashboardService
     public List<Dashboard> getListDashboard( String strJSON )
     {
         List<Dashboard> listDashBoard = new ArrayList<Dashboard>( );
-
         JSONObject obj = (JSONObject) JSONSerializer.toJSON( strJSON );
-
         JSONArray arr = obj.getJSONArray( "saved_objects" );
-
         for ( int i = 0; i < arr.size( ); i++ )
         {
             JSONObject document = arr.getJSONObject( i );
-
             Dashboard dashboard = new Dashboard( );
             dashboard.setIdKibanaDashboard( document.getString( "id" ) );
             dashboard.setTitle( document.getJSONObject( "attributes" ).getString( "title" ) );
             listDashBoard.add( dashboard );
         }
-
         return listDashBoard;
     }
 
@@ -186,7 +185,14 @@ public class DashboardService
         {
             AppLogService.error( "Unable to find Kibana index", e );
         }
+    }
 
+    /**
+     * Insert a dashboard to database
+     */
+    public void createDashboard( Dashboard dashboard )
+    {
+        DashboardHome.createOrUpdate( dashboard );
     }
 
     /**
@@ -200,7 +206,6 @@ public class DashboardService
     {
         List<Dashboard> listFilteredDashboards = new ArrayList<Dashboard>( );
         AdminUser user = AdminUserService.getAdminUser( request );
-
         for ( Dashboard dashboard : listDashboard )
         {
             Dashboard storedDashboard = DashboardHome.findByKibanaId( dashboard.getIdKibanaDashboard( ) );
@@ -221,9 +226,7 @@ public class DashboardService
     {
         // First delete RBAC Resource related to given id dashboard
         RBACHome.removeForResource( KibanaConstants.DASHBOARD_RESOURCE_TYPE, Integer.toString( nIdDashboard ) );
-
         // Then delete Dashboard
         DashboardHome.delete( nIdDashboard );
     }
-
 }

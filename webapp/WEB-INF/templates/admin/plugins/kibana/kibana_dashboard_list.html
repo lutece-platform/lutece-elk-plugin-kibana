@@ -1,0 +1,29 @@
+<#setting url_escaping_charset='UTF-8'>
+    <@row>
+    <@columns>
+        <@box color='primary'>
+            <@boxHeader title='#i18n{kibana.manage_dashboard.title}' boxTools=true>
+            </@boxHeader>
+            <@boxBody>
+                <@table>
+                    <tr>
+                        <th>#i18n{kibana.manage_dashboards.columnTitle}</th>
+                        <th>#i18n{kibana.manage_dashboards.columnActions}</th>
+                    </tr>
+                    <@tableHeadBodySeparator />
+                    <#list dashboards_list as dashboard>
+                        <tr>
+                            <td>
+                                ${dashboard.title}
+                            </td>
+                            <td>
+                                <@aButton href='jsp/admin/plugins/kibana/KibanaDashboard.jsp?view=dashboard&tab=${dashboard.idKibanaDashboard}' title='#i18n{forms.manageForm.stats.label}' hideTitle=['all'] buttonIcon='chart-area' size='md' color='primary' />
+                            </td>
+                        </tr>
+                    </#list>
+                </@table>
+            </@boxBody>
+        </@box>
+    </@columns>
+</@row>
+<@scrollTopBtn />

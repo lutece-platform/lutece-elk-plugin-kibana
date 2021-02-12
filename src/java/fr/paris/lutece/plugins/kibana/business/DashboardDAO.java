@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.kibana.business;
 
+import fr.paris.lutece.plugins.elasticdata.service.DataSourceService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -47,10 +48,10 @@ public final class DashboardDAO implements IDashboardDAO
 {
     // Constants
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_dashboard ) FROM kibana_dashboard";
-    private static final String SQL_QUERY_SELECT = "SELECT id_dashboard, idKibanaDashboard, title FROM kibana_dashboard WHERE id_dashboard = ?";
-    private static final String SQL_QUERY_SELECT_BY_KIBANA_ID = "SELECT id_dashboard, idKibanaDashboard, title FROM kibana_dashboard WHERE idKibanaDashboard = ?";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO kibana_dashboard ( id_dashboard, idKibanaDashboard, title ) VALUES ( ?, ?, ? ) ";
-    private static final String SQL_QUERY_SELECTALL = "SELECT id_dashboard, idKibanaDashboard, title FROM kibana_dashboard";
+    private static final String SQL_QUERY_SELECT = "SELECT id_dashboard, idKibanaDashboard, title, dataSourceName FROM kibana_dashboard WHERE id_dashboard = ?";
+    private static final String SQL_QUERY_SELECT_BY_KIBANA_ID = "SELECT id_dashboard, idKibanaDashboard, title, dataSourceName FROM kibana_dashboard WHERE idKibanaDashboard = ?";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO kibana_dashboard ( id_dashboard, idKibanaDashboard, title, dataSourceName ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_SELECTALL = "SELECT id_dashboard, idKibanaDashboard, title, dataSourceName FROM kibana_dashboard";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_dashboard FROM kibana_dashboard";
     private static final String SQL_QUERY_DELETE = "DELETE FROM kibana_dashboard WHERE id_dashboard = ?";
     private static final String SQL_QUERY_DELETE_ALL = "DELETE FROM kibana_dashboard";
@@ -92,6 +93,7 @@ public final class DashboardDAO implements IDashboardDAO
         daoUtil.setInt( nIndex++, dashboard.getId( ) );
         daoUtil.setString( nIndex++, dashboard.getIdKibanaDashboard( ) );
         daoUtil.setString( nIndex++, dashboard.getTitle( ) );
+        daoUtil.setString( nIndex++, dashboard.getIdDataSource( ) );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );
@@ -116,6 +118,8 @@ public final class DashboardDAO implements IDashboardDAO
             dashboard.setId( daoUtil.getInt( nIndex++ ) );
             dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
             dashboard.setTitle( daoUtil.getString( nIndex++ ) );
+            dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
+
         }
 
         daoUtil.free( );
@@ -141,6 +145,8 @@ public final class DashboardDAO implements IDashboardDAO
             dashboard.setId( daoUtil.getInt( nIndex++ ) );
             dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
             dashboard.setTitle( daoUtil.getString( nIndex++ ) );
+            dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
+
         }
 
         daoUtil.free( );
@@ -165,6 +171,7 @@ public final class DashboardDAO implements IDashboardDAO
             dashboard.setId( daoUtil.getInt( nIndex++ ) );
             dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
             dashboard.setTitle( daoUtil.getString( nIndex++ ) );
+            dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
 
             dashboardList.add( dashboard );
         }

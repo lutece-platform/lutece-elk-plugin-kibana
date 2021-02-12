@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.kibana.web;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,20 +60,23 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
     private static final long serialVersionUID = -8829869449480096316L;
 
     // Templates
-    private static final String TEMPLATE_HOME = "/admin/plugins/kibana/kibana.html";
+    private static final String TEMPLATE_DASHBOARD = "/admin/plugins/kibana/kibana_dashboard.html";
+    private static final String TEMPLATE_DASHBOARD_LIST = "/admin/plugins/kibana/kibana_dashboard_list.html";
     private static final String TEMPLATE_ELASTICSEARH_ERROR = "/admin/plugins/kibana/elasticsearch_error.html";
     private static final String TEMPLATE_NO_DASHBOARD = "/admin/plugins/kibana/no_dashboard.html";
 
     // Views
     private static final String VIEW_DASHBOARD = "dashboard";
+    private static final String VIEW_DASHBOARD_LIST = "dashboardList";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_DASHBOARD = "kibana.adminFeature.KibanaDashboard.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_DASHBOARD_LIST = "kibana.adminFeature.KibanaDashboard.list.pageTitle";
 
     // Freemarker
     private static final String MARK_KIBANA_SERVER_URL = "kibana_server_url";
     private static final String MARK_DASHBOARDS_LIST = "dashboards_list";
-    private static final String MARK_CURRENT = "current";
+    private static final String MARK_DASHBOARD = "dashboard";
     private static final String MARK_ERROR_MESSAGE = "error_message";
     private static final String PARAMETER_TAB = "tab";
 
@@ -83,29 +87,24 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
      *            The HTTP request
      * @return The view
      */
-    @View( value = VIEW_DASHBOARD, defaultView = true )
+    @View( value = VIEW_DASHBOARD )
     public String getKibanaDashboard( HttpServletRequest request )
     {
         try
         {
             List<Dashboard> listDashboards = DashboardService.getInstance( ).getDashboards( );
             listDashboards = DashboardService.getInstance( ).filterDashboardListRBAC( listDashboards, request );
-            if ( !listDashboards.isEmpty( ) )
-            {
-                String strCurrent = listDashboards.get( 0 ).getIdKibanaDashboard( );
-                String strTab = request.getParameter( PARAMETER_TAB );
+            String strIdDashboard = request.getParameter( PARAMETER_TAB );
+            Optional<Dashboard> dashboard = listDashboards.stream( ).filter( o -> o.getIdKibanaDashboard( ).equals( strIdDashboard ) ).findFirst( );
 
-                if ( strTab != null )
-                {
-                    strCurrent = strTab;
-                }
+            if ( dashboard.isPresent( ) )
+            {
 
                 Map<String, Object> model = getModel( );
-                model.put( MARK_DASHBOARDS_LIST, listDashboards );
-                model.put( MARK_CURRENT, strCurrent );
+                model.put( MARK_DASHBOARD, dashboard.get( ) );
                 model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
 
-                return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_HOME, model );
+                return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_DASHBOARD, model );
             }
             else
             {
@@ -126,6 +125,48 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
             model.put( MARK_ERROR_MESSAGE, ex.getMessage( ) );
 
             return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_ELASTICSEARH_ERROR, model );
+        }
+    }
+
+    /**
+     * Returns the content of the page kibana.
+     * 
+     * @param request
+     *            The HTTP request
+     * @return The view
+     */
+    @View( value = VIEW_DASHBOARD_LIST, defaultView = true )
+    public String getKibanaDashboardList( HttpServletRequest request )
+    {
+        try
+        {
+            List<Dashboard> listDashboards = DashboardService.getInstance( ).getDashboards( );
+            listDashboards = DashboardService.getInstance( ).filterDashboardListRBAC( listDashboards, request );
+            if ( !listDashboards.isEmpty( ) )
+            {
+                Map<String, Object> model = getModel( );
+                model.put( MARK_DASHBOARDS_LIST, listDashboards );
+                return getPage( PROPERTY_PAGE_TITLE_DASHBOARD_LIST, TEMPLATE_DASHBOARD_LIST, model );
+            }
+            else
+            {
+                Map<String, Object> model = getModel( );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
+                return getPage( PROPERTY_PAGE_TITLE_DASHBOARD_LIST, TEMPLATE_NO_DASHBOARD, model );
+            }
+        }
+        catch( NoKibanaIndexException ex )
+        {
+            Map<String, Object> model = getModel( );
+            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
+            return getPage( PROPERTY_PAGE_TITLE_DASHBOARD_LIST, TEMPLATE_NO_DASHBOARD, model );
+        }
+        catch( NoElasticSearchServerException ex )
+        {
+            Map<String, Object> model = getModel( );
+            model.put( MARK_ERROR_MESSAGE, ex.getMessage( ) );
+
+            return getPage( PROPERTY_PAGE_TITLE_DASHBOARD_LIST, TEMPLATE_ELASTICSEARH_ERROR, model );
         }
     }
 }

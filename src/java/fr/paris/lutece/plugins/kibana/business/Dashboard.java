@@ -51,6 +51,8 @@ public class Dashboard implements Serializable, RBACResource
 
     private String _strTitle;
 
+    private String _strIdDataSource;
+
     /**
      * Returns the Id
      * 
@@ -112,6 +114,27 @@ public class Dashboard implements Serializable, RBACResource
     public void setTitle( String strTitle )
     {
         _strTitle = strTitle;
+    }
+
+    /**
+     * Returns the IdDataSource
+     * 
+     * @return The IdDataSource
+     */
+    public String getIdDataSource( )
+    {
+        return _strIdDataSource;
+    }
+
+    /**
+     * Sets the IdDataSource
+     * 
+     * @param strIdDataSource
+     *            The IdDataSource
+     */
+    public void setIdDataSource( String strIdDataSource )
+    {
+        _strIdDataSource = strIdDataSource;
     }
 
     ////////////////////////////////////////////////////////////////////////////

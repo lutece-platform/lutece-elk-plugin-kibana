@@ -1,44 +1,40 @@
-<#include "managekibana_tabs.html" />
-<@tabs tab="dashboard" />
-
-<@rowBox>
-    <div class="box-header">
-            <h3 class="box-title">#i18n{kibana.manage_dashboard.title}</h3>
-            <form class="form-inline pull-right" method="post" name="manage_dashboard" action="jsp/admin/plugins/kibana/ManageDashboards.jsp">
-                <button  class="btn btn-primary" name="action_importDashboards" type="submit">
-                    <i class="icon-plus icon-white"></i>&nbsp;#i18n{kibana.manage_dashboard.buttonImport}
-                </button>
-            </form>
-    </div>
-    <@boxBody>    
-    <@messages infos=infos />
-    <@paginationAdmin paginator=paginator combo=1 />
-    <@table>
-        <tr>
-            <input type="hidden" id="id" name="id"/>
-            <th>#i18n{kibana.manage_dashboards.columnIdKibanaDashboard}</th>
-            <th>#i18n{kibana.manage_dashboards.columnTitle}</th>
-            <th>#i18n{kibana.manage_dashboards.columnActions}</th>
-        </tr>
-        <@tableHeadBodySeparator />
-        <#list dashboard_list as dashboard >
-        <tr>
-            <input type="hidden" id="id" name="id"/>
-            <td>
-                ${dashboard.idKibanaDashboard}
-            </td>
-            <td>
-                ${dashboard.title}
-            </td>
-            <td>
-                <a href="jsp/admin/plugins/kibana/ManageDashboards.jsp?action=confirmRemoveDashboard&id_dashboard=${dashboard.id}"
-                               class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}" >
-                    <i class="fa fa-trash"></i>
-                </a>
-            </td>
-        </tr>
-        </#list>
-    </@table>
-    <@paginationAdmin paginator=paginator />
-  </@boxBody>
-</@rowBox>
+<@row>
+    <@columns>
+        <@box color='primary'>
+            <@boxHeader title='#i18n{kibana.manage_dashboard.title}' boxTools=true>
+                <@aButton href='jsp/admin/plugins/kibana/ManageDashboards.jsp?action=importDashboards' buttonIcon='plus'
+                    title='#i18n{kibana.manage_dashboard.buttonImport}' hideTitle=['xs','sm'] size='sm' />
+            </@boxHeader>
+            <@boxBody>
+                <@table>
+                    <tr>
+                        <input type="hidden" id="id" name="id" />
+                        <th>#i18n{kibana.manage_dashboards.columnIdKibanaDashboard}</th>
+                        <th>#i18n{kibana.manage_dashboards.columnTitle}</th>
+                        <th>#i18n{kibana.manage_dashboards.columnActions}</th>
+                    </tr>
+                    <@tableHeadBodySeparator />
+                    <#list dashboard_list as dashboard>
+                        <tr>
+                            <input type="hidden" id="id" name="id" />
+                            <td>
+                                ${dashboard.idKibanaDashboard}
+                            </td>
+                            <td>
+                                ${dashboard.title}
+                            </td>
+                            <td>
+                                <a href="jsp/admin/plugins/kibana/ManageDashboards.jsp?action=confirmRemoveDashboard&id_dashboard=${dashboard.id}"
+                                    class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </#list>
+                </@table>
+                <@paginationAdmin paginator=paginator combo=1 showcount=0 />
+            </@boxBody>
+        </@box>
+    </@columns>
+</@row>
+<@scrollTopBtn />

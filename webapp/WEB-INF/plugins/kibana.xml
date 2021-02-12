@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><plug-in>
     <name>kibana</name>
-    <class>fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation</class>
+    <class>fr.paris.lutece.plugins.kibana.service.KibanaPlugin</class>
     <version>2.0.2-SNAPSHOT</version>
     <documentation/>
     <installation/>

@@ -12,7 +12,7 @@
     <packaging>lutece-plugin</packaging>
     <version>2.0.2-SNAPSHOT</version>
     <name>Lutece kibana plugin</name>
-    <description>Provides tabbed UI to display Kibana dashboards</description>
+    <description>Provides Kibana dashboards</description>
     
     <repositories>
         <repository>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>fr.paris.lutece</groupId>
             <artifactId>lutece-core</artifactId>
-            <version>[6.0.0-RC-02,)</version>
+            <version>[7.0.0-SNAPSHOT,)</version>
             <type>lutece-core</type>
         </dependency>
         <dependency>
@@ -43,6 +43,11 @@
             <artifactId>library-httpaccess</artifactId>
             <version>[2.3.0,)</version>
         </dependency>
+        <dependency>
+            <groupId>fr.paris.lutece.plugins</groupId>
+            <artifactId>plugin-elasticdata</artifactId>
+            <version>[1.0.7-SNAPSHOT,)</version>
+        </dependency> 
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
