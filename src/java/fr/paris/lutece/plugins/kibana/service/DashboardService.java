@@ -46,7 +46,6 @@ import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.signrequest.BasicAuthorizationAuthenticator;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
-import freemarker.template.utility.StringUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -62,16 +61,30 @@ import javax.servlet.http.HttpServletRequest;
 public class DashboardService
 {
     private static final String NOT_FOUND = "404";
-    private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.kibana_server_url";
+    private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.url";
     private static final String DEFAULT_KIBANA_URL = "http://localhost:5601";
     private static final String KIBANA_SERVER_URL = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_URL, DEFAULT_KIBANA_URL );
     private static final String KIBANA_DASHBOARD_LIST_URL = "/api/saved_objects/_find?type=dashboard";
-    private static final String PROPERTY_KIBANA_SERVER_SPACE_ID = "kibana.kibana_server.space.id";
-    private static final String PROPERTY_KIBANA_SERVER_LOGIN = "kibana.kibana_server.login";
-    private static final String PROPERTY_KIBANA_SERVER_PWD = "kibana.kibana_server.pwd";
+    private static final String PROPERTY_KIBANA_SERVER_SPACE_ID = "kibana.space.id";
+    private static final String PROPERTY_KIBANA_SERVER_LOGIN = "kibana.admin.login";
+    private static final String PROPERTY_KIBANA_SERVER_PWD = "kibana.admin.pwd";
+    private static final String PROPERTY_KIBANA_SERVER_USER_LOGIN = "kibana.user.login";
+    private static final String PROPERTY_KIBANA_SERVER_USER_PWD = "kibana.user.pwd";
+    private static final String PROPERTY_KIBANA_SERVER_SHOW_USER_ACCOUNT = "kibana.user.show";
+    private static final String PROPERTY_KIBANA_SERVER_SPACE_AUTO_CREATE = "kibana.space.autoCreate";
+    private static final String PROPERTY_KIBANA_SERVER_USER_AUTO_CREATE = "kibana.user.autoCreate";
+    private static final String PROPERTY_KIBANA_SERVER_INDEX_PATTERN_AUTO_CREATE = "kibana.indexPattern.autoCreate";
     private static final String KIBANA_SERVER_SPACE_ID = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_SPACE_ID );
     private static final String KIBANA_SERVER_LOGIN = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_LOGIN );
     private static final String KIBANA_SERVER_PWD = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_PWD );
+    private static final String KIBANA_SERVER_USER_LOGIN = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_USER_LOGIN );
+    private static final String KIBANA_SERVER_USER_PWD = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_USER_PWD );
+    private static final boolean KIBANA_SERVER_USER_AUTO_CREATE = AppPropertiesService.getPropertyBoolean( PROPERTY_KIBANA_SERVER_USER_AUTO_CREATE, false );
+    private static final boolean KIBANA_SERVER_INDEX_PATTERN_AUTO_CREATE = AppPropertiesService
+            .getPropertyBoolean( PROPERTY_KIBANA_SERVER_INDEX_PATTERN_AUTO_CREATE, false );
+    private static final boolean KIBANA_SERVER_SPACE_AUTO_CREATE = AppPropertiesService.getPropertyBoolean( PROPERTY_KIBANA_SERVER_SPACE_AUTO_CREATE, false );
+    private static final boolean KIBANA_SERVER_SHOW_USER_ACCOUNT = AppPropertiesService.getPropertyBoolean( PROPERTY_KIBANA_SERVER_SHOW_USER_ACCOUNT, false );
+
     private static DashboardService _instance = null;
     private static RequestAuthenticator _authenticator = new BasicAuthorizationAuthenticator( KIBANA_SERVER_LOGIN, KIBANA_SERVER_PWD );
 
@@ -162,6 +175,76 @@ public class DashboardService
     public String getKibanaServerUrl( )
     {
         return KIBANA_SERVER_URL;
+    }
+
+    /**
+     * Get Kibana server space id
+     * 
+     * @return The URL
+     */
+    public String getKibanaServerSpaceId( )
+    {
+        return KIBANA_SERVER_SPACE_ID;
+    }
+
+    /**
+     * Get Kibana server user login
+     * 
+     * @return The URL
+     */
+    public String getKibanaServerUserLogin( )
+    {
+        return KIBANA_SERVER_USER_LOGIN;
+    }
+
+    /**
+     * Get Kibana server user password
+     * 
+     * @return The URL
+     */
+    public String getKibanaServerUserPassword( )
+    {
+        return KIBANA_SERVER_USER_PWD;
+    }
+
+    /**
+     * is Kibana server user should auto created
+     * 
+     * @return The URL
+     */
+    public boolean isKibanaServerUserAutoCreate( )
+    {
+        return KIBANA_SERVER_USER_AUTO_CREATE;
+    }
+
+    /**
+     * is Kibana server space should auto created
+     * 
+     * @return The URL
+     */
+    public boolean isKibanaServerSpaceAutoCreate( )
+    {
+        return KIBANA_SERVER_SPACE_AUTO_CREATE;
+    }
+
+    /**
+     * is Kibana server indexe pattern should auto created
+     * 
+     * @return The URL
+     */
+    public boolean isKibanaServerIndexPatternAutoCreate( )
+    {
+        return KIBANA_SERVER_INDEX_PATTERN_AUTO_CREATE;
+    }
+
+    /**
+     * is Kibana server user should showed
+     * 
+     * @return The URL
+     */
+    public boolean isKibanaServerUserShow( )
+    {
+        return KIBANA_SERVER_SHOW_USER_ACCOUNT;
     }
 
     /**

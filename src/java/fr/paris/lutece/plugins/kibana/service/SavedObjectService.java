@@ -18,27 +18,36 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SavedObjectService
 {
     private static final String NOT_FOUND = "404";
-    private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.kibana_server_url";
+    private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.url";
     private static final String DEFAULT_KIBANA_URL = "http://localhost:5601";
     private static final String KIBANA_SERVER_URL = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_URL, DEFAULT_KIBANA_URL );
-    private static final String PROPERTY_KIBANA_SERVER_SPACE_ID = "kibana.kibana_server.space.id";
-    private static final String PROPERTY_KIBANA_SERVER_LOGIN = "kibana.kibana_server.login";
-    private static final String PROPERTY_KIBANA_SERVER_PWD = "kibana.kibana_server.pwd";
+    private static final String PROPERTY_KIBANA_SERVER_SPACE_ID = "kibana.space.id";
+    private static final String PROPERTY_KIBANA_SERVER_LOGIN = "kibana.admin.login";
+    private static final String PROPERTY_KIBANA_SERVER_PWD = "kibana.admin.pwd";
+    private static final String PROPERTY_KIBANA_SERVER_USER_LOGIN = "kibana.user.login";
+    private static final String PROPERTY_KIBANA_SERVER_USER_PWD = "kibana.user.pwd";
     private static final String KIBANA_SERVER_SPACE_ID = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_SPACE_ID );
     private static final String KIBANA_SERVER_LOGIN = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_LOGIN );
     private static final String KIBANA_SERVER_PWD = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_PWD );
+    private static final String KIBANA_SERVER_USER_LOGIN = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_USER_LOGIN );
+    private static final String KIBANA_SERVER_USER_PWD = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_USER_PWD );
     private static final String KIBANA_SERVER_REFRESH_INDEX_PATTERN_NAME = "/api/index_patterns/_fields_for_wildcard?pattern=";
     private static final String KIBANA_SERVER_REFRESH_INDEX_PATTERN_PARAMETERS = "&meta_fields=_source&meta_fields=_id&meta_fields=_type&meta_fields=_index&meta_fields=_score";
     private static final String KIBANA_SERVER_INDEX_API_URL = "/api/saved_objects/index-pattern/";
     private static final String KIBANA_SERVER_DASHBOARD_OBJECT_API_URL = "/api/saved_objects/dashboard/";
+    private static final String KIBANA_SERVER_SECURITY_USER_API_URL = "/internal/security/users/";
+    private static final String KIBANA_SERVER_SECURITY_ROLE_API_URL = "/api/security/role/";
+    private static final String KIBANA_SERVER_SPACE_API_URL = "/api/spaces/space";
     private static RequestAuthenticator _authenticator = new BasicAuthorizationAuthenticator( KIBANA_SERVER_LOGIN, KIBANA_SERVER_PWD );
 
     /** Package constructor */
@@ -78,6 +87,169 @@ public class SavedObjectService
         {
             return null;
         }
+    }
+
+    public static void initEnvironnement( )
+    {
+
+        Collection<DataSource> listDataSource = DataSourceService.getDataSources( );
+        List<String> listTargetIndexName = new ArrayList<String>( );
+        for ( DataSource dataSource : listDataSource )
+        {
+            listTargetIndexName.add( dataSource.getTargetIndexName( ) );
+        }
+
+        if ( DashboardService.getInstance( ).isKibanaServerSpaceAutoCreate( ) && !isExistSpace( KIBANA_SERVER_SPACE_ID ) )
+        {
+            createSpace( KIBANA_SERVER_SPACE_ID );
+        }
+
+        if ( isExistSpace( KIBANA_SERVER_SPACE_ID ) )
+        {
+
+            if ( DashboardService.getInstance( ).isKibanaServerIndexPatternAutoCreate( ) )
+            {
+
+                for ( String targetIndexName : listTargetIndexName )
+                {
+                    createIndexPattern( targetIndexName );
+                }
+            }
+
+            if ( DashboardService.getInstance( ).isKibanaServerUserAutoCreate( ) )
+            {
+                createReadOnlyUser( KIBANA_SERVER_USER_LOGIN, KIBANA_SERVER_USER_PWD, listTargetIndexName );
+            }
+
+        }
+
+    }
+
+    /**
+     * create kibana index pattern
+     * 
+     * @param strIdIndexPattern
+     *            The index pattern id
+     */
+    public static void createIndexPattern( String strIdIndexPattern )
+    {
+        HttpAccess httpAccess = new HttpAccess( );
+        try
+        {
+            // header
+            Map<String, String> headers = new HashMap<>( );
+            headers.put( "kbn-xsrf", "true" );
+            JSONObject attributes = new JSONObject( );
+            attributes.put( "title", strIdIndexPattern );
+            JSONObject obj = new JSONObject( );
+            obj.put( "attributes", attributes );
+            httpAccess.doPostJSON( KIBANA_SERVER_URL + "/s/" + KIBANA_SERVER_SPACE_ID + KIBANA_SERVER_INDEX_API_URL + strIdIndexPattern, obj.toString( ),
+                    _authenticator, null, headers, null );
+        }
+        catch( HttpAccessException ex )
+        {
+            AppLogService.error( "Unable to connect to Elasticsearch / Kibana servers", ex );
+        }
+    }
+
+    /**
+     * Is space exist
+     * 
+     * @param strSpaceId
+     *            The index pattern id
+     */
+    public static boolean isExistSpace( String strSpaceId )
+    {
+        HttpAccess httpAccess = new HttpAccess( );
+        try
+        {
+            // header
+            Map<String, String> headers = new HashMap<>( );
+            headers.put( "kbn-xsrf", "true" );
+            String strResult = httpAccess.doGet( KIBANA_SERVER_URL + KIBANA_SERVER_SPACE_API_URL + "/" + strSpaceId, _authenticator, null, headers, null );
+            JSONObject jsonResult = (JSONObject) JSONSerializer.toJSON( strResult );
+            Object statusCode = jsonResult.get( "statusCode" );
+            if ( statusCode != null )
+            {
+                return false;
+            }
+            return true;
+        }
+        catch( HttpAccessException ex )
+        {
+            AppLogService.error( "Unable to connect to Elasticsearch / Kibana servers", ex );
+        }
+
+        return false;
+    }
+
+    /**
+     * create space index pattern
+     * 
+     * @param strSpaceId
+     *            The index pattern id
+     */
+    public static void createSpace( String strSpaceId )
+    {
+        HttpAccess httpAccess = new HttpAccess( );
+        try
+        {
+            // header
+            Map<String, String> headers = new HashMap<>( );
+            headers.put( "kbn-xsrf", "true" );
+            JSONObject obj = new JSONObject( );
+            obj.put( "id", strSpaceId );
+            obj.put( "name", strSpaceId );
+            httpAccess.doPostJSON( KIBANA_SERVER_URL + KIBANA_SERVER_SPACE_API_URL, obj.toString( ), _authenticator, null, headers, null );
+        }
+        catch( HttpAccessException ex )
+        {
+            AppLogService.error( "Unable to connect to Elasticsearch / Kibana servers", ex );
+        }
+    }
+
+    /**
+     * create read only user
+     * 
+     * @param strSpaceId
+     *            The index pattern id
+     */
+    public static void createReadOnlyUser( String strLogin, String strPassword, List<String> listTargetIndexName )
+    {
+        String indicesNames = listTargetIndexName.stream( ).map( n -> String.valueOf( n ) ).collect( Collectors.joining( "\",\"", "\"", "\"" ) );
+        HttpAccess httpAccess = new HttpAccess( );
+        try
+        {
+            Map<String, String> headers = new HashMap<>( );
+            headers.put( "kbn-xsrf", "true" );
+            String strRoleName = KIBANA_SERVER_SPACE_ID + "_dashboard";
+
+            String strRoleObj = "{\"elasticsearch\":{\"cluster\":[],\"indices\":[{\"names\":[" + indicesNames
+                    + "],\"privileges\":[\"read\"],\"allow_restricted_indices\":false}],\"run_as\":[]},\"kibana\":[{\"base\":[],\"feature\":{\"dashboard\":[\"read\"]},\"spaces\":[\""
+                    + KIBANA_SERVER_SPACE_ID + "\"]}]}";
+
+            httpAccess.doPutJSON( KIBANA_SERVER_URL + "/s/" + KIBANA_SERVER_SPACE_ID + KIBANA_SERVER_SECURITY_ROLE_API_URL + strRoleName, strRoleObj,
+                    _authenticator, null, headers, null );
+
+            JSONObject obj = new JSONObject( );
+            obj.put( "username", strLogin );
+            obj.put( "password", strPassword );
+            obj.put( "full_name", strLogin );
+
+            JSONArray roles = new JSONArray( );
+            roles.add( KIBANA_SERVER_SPACE_ID + "_dashboard" );
+            obj.accumulate( "roles", roles );
+
+            String strObj = removeUnusedBackSlash( obj.toString( ) );
+
+            httpAccess.doPostJSON( KIBANA_SERVER_URL + "/s/" + KIBANA_SERVER_SPACE_ID + KIBANA_SERVER_SECURITY_USER_API_URL + strLogin, strObj, _authenticator,
+                    null, headers, null );
+        }
+        catch( HttpAccessException ex )
+        {
+            AppLogService.error( "Unable to connect to Elasticsearch / Kibana servers", ex );
+        }
+
     }
 
     /**
@@ -404,6 +576,29 @@ public class SavedObjectService
         jsString = jsString.replace( "\t", "\\t" );
         jsString = jsString.replace( "/", "\\/" );
         return jsString;
+    }
+
+    /**
+     * Post object
+     * 
+     * @param savedObject
+     *            Object to save
+     */
+    private static final void doPost( JSONObject savedObject, String apiUrl )
+    {
+        HttpAccess httpAccess = new HttpAccess( );
+        Map<String, String> headers = new HashMap<>( );
+        headers.put( "kbn-xsrf", "true" );
+        String strObject = savedObject.toString( );
+        strObject = removeUnusedBackSlash( strObject );
+        try
+        {
+            httpAccess.doPostJSON( KIBANA_SERVER_URL + "/s/" + KIBANA_SERVER_SPACE_ID + apiUrl, strObject, _authenticator, null, headers, null );
+        }
+        catch( HttpAccessException ex )
+        {
+            AppLogService.error( "Unable to connect to Kibana server", ex );
+        }
     }
 
     /**

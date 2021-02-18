@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.kibana.service.listener;
 
 import fr.paris.lutece.plugins.elasticdata.business.DataSource;
 import fr.paris.lutece.plugins.elasticdata.service.DataSourceService;
-import fr.paris.lutece.plugins.kibana.service.DashboardService;
 import fr.paris.lutece.plugins.kibana.service.IDataVisualizerService;
 import fr.paris.lutece.plugins.kibana.service.SavedObjectService;
 import fr.paris.lutece.portal.business.event.EventRessourceListener;
@@ -60,6 +59,8 @@ public class DataSourceEventListener implements EventRessourceListener
     {
         if ( checkResourceType( event ) )
         {
+            SavedObjectService.initEnvironnement( );
+
             String strIdResource = event.getIdResource( );
             DataSource dataSource = DataSourceService.getDataSource( strIdResource );
             for ( IDataVisualizerService dataVisualizerService : SpringContextService.getBeansOfType( IDataVisualizerService.class ) )

@@ -69,12 +69,16 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
     private static final String VIEW_DASHBOARD = "dashboard";
     private static final String VIEW_DASHBOARD_LIST = "dashboardList";
 
-    // Properties for page titles
+    // Properties
     private static final String PROPERTY_PAGE_TITLE_DASHBOARD = "kibana.adminFeature.KibanaDashboard.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_DASHBOARD_LIST = "kibana.adminFeature.KibanaDashboard.list.pageTitle";
+    private static final String PROPERTY_DASHBOARD_USER_TEXT = "kibana.dashboard.user.text";
 
     // Freemarker
     private static final String MARK_KIBANA_SERVER_URL = "kibana_server_url";
+    private static final String MARK_KIBANA_SERVER_USER_LOGIN = "kibana_server_user_login";
+    private static final String MARK_KIBANA_SERVER_USER_PWD = "kibana_server_user_pwd";
+    private static final String MARK_KIBANA_SERVER_SPACE_ID = "kibana_server_space_id";
     private static final String MARK_DASHBOARDS_LIST = "dashboards_list";
     private static final String MARK_DASHBOARD = "dashboard";
     private static final String MARK_ERROR_MESSAGE = "error_message";
@@ -99,10 +103,16 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
 
             if ( dashboard.isPresent( ) )
             {
-
                 Map<String, Object> model = getModel( );
                 model.put( MARK_DASHBOARD, dashboard.get( ) );
                 model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
+                model.put( MARK_KIBANA_SERVER_SPACE_ID, DashboardService.getInstance( ).getKibanaServerSpaceId( ) );
+
+                if ( DashboardService.getInstance( ).isKibanaServerUserShow( ) )
+                {
+                    model.put( MARK_KIBANA_SERVER_USER_LOGIN, DashboardService.getInstance( ).getKibanaServerUserLogin( ) );
+                    model.put( MARK_KIBANA_SERVER_USER_PWD, DashboardService.getInstance( ).getKibanaServerUserPassword( ) );
+                }
 
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_DASHBOARD, model );
             }
