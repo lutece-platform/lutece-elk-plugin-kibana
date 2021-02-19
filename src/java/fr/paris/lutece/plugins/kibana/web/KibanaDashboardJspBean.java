@@ -33,9 +33,11 @@
  */
 package fr.paris.lutece.plugins.kibana.web;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,6 +45,10 @@ import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.plugins.kibana.service.DashboardService;
 import fr.paris.lutece.plugins.kibana.service.NoElasticSearchServerException;
 import fr.paris.lutece.plugins.kibana.service.NoKibanaIndexException;
+import fr.paris.lutece.portal.business.right.Right;
+import fr.paris.lutece.portal.business.user.AdminUser;
+import fr.paris.lutece.portal.business.user.AdminUserHome;
+import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -72,18 +78,22 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
     // Properties
     private static final String PROPERTY_PAGE_TITLE_DASHBOARD = "kibana.adminFeature.KibanaDashboard.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_DASHBOARD_LIST = "kibana.adminFeature.KibanaDashboard.list.pageTitle";
-    private static final String PROPERTY_DASHBOARD_USER_TEXT = "kibana.dashboard.user.text";
 
     // Freemarker
     private static final String MARK_KIBANA_SERVER_URL = "kibana_server_url";
     private static final String MARK_KIBANA_SERVER_USER_LOGIN = "kibana_server_user_login";
     private static final String MARK_KIBANA_SERVER_USER_PWD = "kibana_server_user_pwd";
     private static final String MARK_KIBANA_SERVER_SPACE_ID = "kibana_server_space_id";
+    private static final String MARK_ELASTICDATA_FORMS_MANAGEMENT = "right_elasticdata_forms_management";
+    private static final String MARK_ELASTICDATA_MANAGEMENT = "right_elasticdata_management";
     private static final String MARK_DASHBOARDS_LIST = "dashboards_list";
     private static final String MARK_DASHBOARD = "dashboard";
     private static final String MARK_ERROR_MESSAGE = "error_message";
     private static final String PARAMETER_TAB = "tab";
 
+    // right
+    private static final String RIGHT_ELASTICDATA_FORMS_MANAGEMENT = "ELASTICDATA_FORMS_MANAGEMENT";
+    private static final String RIGHT_ELASTICDATA_MANAGEMENT = "ELASTICDATA_MANAGEMENT";
     /**
      * Returns the content of the page kibana.
      * 
@@ -114,6 +124,18 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
                     model.put( MARK_KIBANA_SERVER_USER_PWD, DashboardService.getInstance( ).getKibanaServerUserPassword( ) );
                 }
 
+                AdminUser currentUser = AdminUserService.getAdminUser( request );
+                Collection<Right> rightList = AdminUserHome.getRightsListForUser( currentUser.getUserId() ).values( );
+
+                if ( rightList.stream().anyMatch(i -> i.getId().equals( RIGHT_ELASTICDATA_FORMS_MANAGEMENT ) ) ) {
+                    model.put( MARK_ELASTICDATA_FORMS_MANAGEMENT, true );
+                }
+                
+
+                if ( rightList.stream().anyMatch(i -> i.getId().equals( RIGHT_ELASTICDATA_MANAGEMENT ) ) ) {
+                    model.put( MARK_ELASTICDATA_MANAGEMENT, true );
+                }
+                
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_DASHBOARD, model );
             }
             else

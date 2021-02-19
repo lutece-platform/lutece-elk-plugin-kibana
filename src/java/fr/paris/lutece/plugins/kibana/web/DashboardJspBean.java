@@ -54,6 +54,9 @@ import javax.servlet.http.HttpServletRequest;
 @Controller( controllerJsp = "ManageDashboards.jsp", controllerPath = "jsp/admin/plugins/kibana/", right = "KIBANA_MANAGEMENT" )
 public class DashboardJspBean extends ManageKibanaJspBean
 {
+    // Uid
+    private static final long serialVersionUID = 2675669204436156692L;
+
     // Templates
     private static final String TEMPLATE_MANAGE_DASHBOARDS = "/admin/plugins/kibana/manage_dashboards.html";
 

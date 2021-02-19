@@ -48,6 +48,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public abstract class ManageKibanaJspBean extends MVCAdminJspBean
 {
+    // Uid
+    private static final long serialVersionUID = 9208669786822843636L;
+
     // Rights
     public static final String RIGHT_MANAGEKIBANA = "KIBANA_MANAGEMENT";
 

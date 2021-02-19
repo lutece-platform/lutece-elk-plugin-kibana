@@ -127,6 +127,8 @@ public class DashboardService
                 if ( dashboard != null )
                 {
                     listDashboards.add( dashboard );
+                } else {
+                    listDashboards.add( availbaleDashboard );
                 }
             }
         }

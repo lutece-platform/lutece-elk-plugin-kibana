@@ -38,14 +38,6 @@
       </admin-feature>
     </admin-features>    
 
-    <!-- XPages parameters -->
-    <applications>
-        <application>
-            <application-id>kibana</application-id>
-            <application-class>fr.paris.lutece.plugins.kibana.web.KibanaApp</application-class>
-        </application>
-    </applications>
-
     <!-- Portlet parameters -->
     <portlets>
     </portlets>
