@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.kibana.service.listener;
 
 import fr.paris.lutece.plugins.elasticdata.business.DataSource;
 import fr.paris.lutece.plugins.elasticdata.service.DataSourceService;
+import fr.paris.lutece.plugins.elasticdata.service.DataSourceUtils;
 import fr.paris.lutece.plugins.kibana.service.IDataVisualizerService;
 import fr.paris.lutece.plugins.kibana.service.SavedObjectService;
 import fr.paris.lutece.portal.business.event.EventRessourceListener;
@@ -99,6 +100,6 @@ public class DataSourceEventListener implements EventRessourceListener
      */
     private boolean checkResourceType( ResourceEvent event )
     {
-        return DataSourceService.getIndexingResourceType( ).equals( event.getTypeResource( ) );
+        return DataSourceUtils.RESOURCE_TYPE_INDEXING.equals( event.getTypeResource( ) );
     }
 }
