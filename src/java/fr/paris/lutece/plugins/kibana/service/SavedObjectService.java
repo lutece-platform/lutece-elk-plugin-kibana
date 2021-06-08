@@ -102,27 +102,18 @@ public class SavedObjectService
         if ( DashboardService.getInstance( ).isKibanaServerSpaceAutoCreate( ) && !isExistSpace( KIBANA_SERVER_SPACE_ID ) )
         {
             createSpace( KIBANA_SERVER_SPACE_ID );
-        }
-
-        if ( isExistSpace( KIBANA_SERVER_SPACE_ID ) )
-        {
-
             if ( DashboardService.getInstance( ).isKibanaServerIndexPatternAutoCreate( ) )
             {
-
                 for ( String targetIndexName : listTargetIndexName )
                 {
                     createIndexPattern( targetIndexName );
                 }
-            }
-
+            }    
             if ( DashboardService.getInstance( ).isKibanaServerUserAutoCreate( ) )
             {
                 createReadOnlyUser( KIBANA_SERVER_USER_LOGIN, KIBANA_SERVER_USER_PWD, listTargetIndexName );
             }
-
         }
-
     }
 
     /**
