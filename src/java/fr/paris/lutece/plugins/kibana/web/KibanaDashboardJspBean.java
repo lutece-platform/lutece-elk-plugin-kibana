@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -94,6 +94,7 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
     // right
     private static final String RIGHT_ELASTICDATA_FORMS_MANAGEMENT = "ELASTICDATA_FORMS_MANAGEMENT";
     private static final String RIGHT_ELASTICDATA_MANAGEMENT = "ELASTICDATA_MANAGEMENT";
+
     /**
      * Returns the content of the page kibana.
      * 
@@ -125,17 +126,18 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
                 }
 
                 AdminUser currentUser = AdminUserService.getAdminUser( request );
-                Collection<Right> rightList = AdminUserHome.getRightsListForUser( currentUser.getUserId() ).values( );
+                Collection<Right> rightList = AdminUserHome.getRightsListForUser( currentUser.getUserId( ) ).values( );
 
-                if ( rightList.stream().anyMatch(i -> i.getId().equals( RIGHT_ELASTICDATA_FORMS_MANAGEMENT ) ) ) {
+                if ( rightList.stream( ).anyMatch( i -> i.getId( ).equals( RIGHT_ELASTICDATA_FORMS_MANAGEMENT ) ) )
+                {
                     model.put( MARK_ELASTICDATA_FORMS_MANAGEMENT, true );
                 }
-                
 
-                if ( rightList.stream().anyMatch(i -> i.getId().equals( RIGHT_ELASTICDATA_MANAGEMENT ) ) ) {
+                if ( rightList.stream( ).anyMatch( i -> i.getId( ).equals( RIGHT_ELASTICDATA_MANAGEMENT ) ) )
+                {
                     model.put( MARK_ELASTICDATA_MANAGEMENT, true );
                 }
-                
+
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_DASHBOARD, model );
             }
             else
