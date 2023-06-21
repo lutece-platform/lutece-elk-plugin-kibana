@@ -12,15 +12,14 @@
             
             <subsection name="Introduction">
                 <p>
-                    Ce plugin permet d'afficher un ou plusieurs tableaux de bord Kibana 
-                    sur une page d'accueil du portail ou dans le back office. Il recherchera automatiquement les tableaux de bord Kibana dans 
-                    un serveur ElasticSearch donné et affichera chacun dans un onglet. 
+                    This plugin let display one or more Kibana dashboards on a portal front end page or
+                    into the back office. It will automatically search for Kibana dashboard into a given
+                    Elastic Search server and displays each one in a tab. 
                 </p>
             </subsection>
             <subsection name="Configuration">
                 <p>
-                    Les URL des serveurs Kibana et ElasticSearch doivent être définies 
-                    comme suit dans le fichier <b>kibana.properties</b> file as below.
+                    URLs of the Kibana and the ElasticSearch servers should be defined into the <b>kibana.properties</b> file as below.
                 </p>
                 <p>
 <pre>                    
