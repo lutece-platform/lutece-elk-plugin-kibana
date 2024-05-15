@@ -62,8 +62,10 @@ public class DashboardService
 {
     private static final String NOT_FOUND = "404";
     private static final String PROPERTY_KIBANA_SERVER_URL = "kibana.url";
+    private static final String PROPERTY_KIBANA_SERVER_IFRAME_URL = "kibana.url.iframe";
     private static final String DEFAULT_KIBANA_URL = "http://localhost:5601";
     private static final String KIBANA_SERVER_URL = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_URL, DEFAULT_KIBANA_URL );
+    private static final String KIBANA_SERVER_IFRAME_URL = AppPropertiesService.getProperty( PROPERTY_KIBANA_SERVER_IFRAME_URL );
     private static final String KIBANA_DASHBOARD_LIST_URL = "/api/saved_objects/_find?type=dashboard";
     private static final String PROPERTY_KIBANA_SERVER_SPACE_ID = "kibana.space.id";
     private static final String PROPERTY_KIBANA_SERVER_LOGIN = "kibana.admin.login";
@@ -178,6 +180,20 @@ public class DashboardService
      */
     public String getKibanaServerUrl( )
     {
+        return KIBANA_SERVER_URL;
+    }
+
+    /**
+     * Get Kibana server URL or iframe URL if it exists and is not empty.
+     * 
+     * @return The appropriate URL
+     */
+    public String getKibanaServerIframeUrl( )
+    {
+        if ( KIBANA_SERVER_IFRAME_URL != null && !KIBANA_SERVER_IFRAME_URL.isEmpty( ) )
+        {
+            return KIBANA_SERVER_IFRAME_URL;
+        }
         return KIBANA_SERVER_URL;
     }
 

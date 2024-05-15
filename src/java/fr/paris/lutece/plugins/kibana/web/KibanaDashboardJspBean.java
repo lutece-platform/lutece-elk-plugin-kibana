@@ -116,7 +116,7 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
             {
                 Map<String, Object> model = getModel( );
                 model.put( MARK_DASHBOARD, dashboard.get( ) );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerIframeUrl( ) );
                 model.put( MARK_KIBANA_SERVER_SPACE_ID, DashboardService.getInstance( ).getKibanaServerSpaceId( ) );
 
                 if ( DashboardService.getInstance( ).isKibanaServerUserShow( ) )
@@ -143,14 +143,14 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
             else
             {
                 Map<String, Object> model = getModel( );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerIframeUrl( ) );
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD, model );
             }
         }
         catch( NoKibanaIndexException ex )
         {
             Map<String, Object> model = getModel( );
-            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
+            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerIframeUrl( ) );
             return getPage( PROPERTY_PAGE_TITLE_DASHBOARD, TEMPLATE_NO_DASHBOARD, model );
         }
         catch( NoElasticSearchServerException ex )
@@ -185,14 +185,14 @@ public class KibanaDashboardJspBean extends MVCAdminJspBean
             else
             {
                 Map<String, Object> model = getModel( );
-                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
+                model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerIframeUrl( ) );
                 return getPage( PROPERTY_PAGE_TITLE_DASHBOARD_LIST, TEMPLATE_NO_DASHBOARD, model );
             }
         }
         catch( NoKibanaIndexException ex )
         {
             Map<String, Object> model = getModel( );
-            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerUrl( ) );
+            model.put( MARK_KIBANA_SERVER_URL, DashboardService.getInstance( ).getKibanaServerIframeUrl( ) );
             return getPage( PROPERTY_PAGE_TITLE_DASHBOARD_LIST, TEMPLATE_NO_DASHBOARD, model );
         }
         catch( NoElasticSearchServerException ex )
