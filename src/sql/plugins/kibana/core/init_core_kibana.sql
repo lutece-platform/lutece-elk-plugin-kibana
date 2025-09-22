@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset kibana:init_core_kibana.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 
 --
 -- Data for table core_admin_right
