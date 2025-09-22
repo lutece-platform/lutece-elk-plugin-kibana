@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset kibana:create_db_kibana.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 
 --
 -- Structure for table kibana_dashboard
