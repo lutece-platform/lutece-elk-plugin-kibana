@@ -8,7 +8,7 @@
 
 DROP TABLE IF EXISTS kibana_dashboard;
 CREATE TABLE kibana_dashboard (
-id_dashboard int(6) NOT NULL,
+id_dashboard int AUTO_INCREMENT,
 idkibanadashboard varchar(255) default '' NOT NULL UNIQUE,
 title long varchar NOT NULL,
 dataSourceName long varchar,
