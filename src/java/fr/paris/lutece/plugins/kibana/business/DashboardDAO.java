@@ -33,11 +33,11 @@
  */
 package fr.paris.lutece.plugins.kibana.business;
 
-import fr.paris.lutece.plugins.elasticdata.service.DataSourceService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
 
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,10 +47,9 @@ import java.util.List;
 public final class DashboardDAO implements IDashboardDAO
 {
     // Constants
-    private static final String SQL_QUERY_NEW_PK = "SELECT max( id_dashboard ) FROM kibana_dashboard";
     private static final String SQL_QUERY_SELECT = "SELECT id_dashboard, idKibanaDashboard, title, dataSourceName FROM kibana_dashboard WHERE id_dashboard = ?";
     private static final String SQL_QUERY_SELECT_BY_KIBANA_ID = "SELECT id_dashboard, idKibanaDashboard, title, dataSourceName FROM kibana_dashboard WHERE idKibanaDashboard = ?";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO kibana_dashboard ( id_dashboard, idKibanaDashboard, title, dataSourceName ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO kibana_dashboard ( idKibanaDashboard, title, dataSourceName ) VALUES ( ?, ?, ? ) ";
     private static final String SQL_QUERY_SELECTALL = "SELECT id_dashboard, idKibanaDashboard, title, dataSourceName FROM kibana_dashboard";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_dashboard FROM kibana_dashboard";
     private static final String SQL_QUERY_DELETE = "DELETE FROM kibana_dashboard WHERE id_dashboard = ?";
@@ -59,44 +58,25 @@ public final class DashboardDAO implements IDashboardDAO
     private static final String SQL_QUERY_UPDATE = "UPDATE kibana_dashboard SET id_dashboard = ?, idKibanaDashboard = ?, title = ? WHERE id_dashboard = ?";
 
     /**
-     * Generates a new primary key
-     * 
-     * @param plugin
-     *            The Plugin
-     * @return The new primary key
-     */
-    public int newPrimaryKey( Plugin plugin )
-    {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin );
-        daoUtil.executeQuery( );
-        int nKey = 1;
-
-        if ( daoUtil.next( ) )
-        {
-            nKey = daoUtil.getInt( 1 ) + 1;
-        }
-
-        daoUtil.free( );
-        return nKey;
-    }
-
-    /**
      * {@inheritDoc }
      */
     @Override
     public void insert( Dashboard dashboard, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
-        dashboard.setId( newPrimaryKey( plugin ) );
-        int nIndex = 1;
+    	try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
+        {
+            int nIndex = 1;
 
-        daoUtil.setInt( nIndex++, dashboard.getId( ) );
-        daoUtil.setString( nIndex++, dashboard.getIdKibanaDashboard( ) );
-        daoUtil.setString( nIndex++, dashboard.getTitle( ) );
-        daoUtil.setString( nIndex++, dashboard.getIdDataSource( ) );
+            daoUtil.setString( nIndex++, dashboard.getIdKibanaDashboard( ) );
+            daoUtil.setString( nIndex++, dashboard.getTitle( ) );
+            daoUtil.setString( nIndex++, dashboard.getIdDataSource( ) );
 
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            daoUtil.executeUpdate( );
+            if ( daoUtil.nextGeneratedKey( ) )
+            {
+                dashboard.setId( daoUtil.getGeneratedKeyInt( 1 ) );
+            }
+        }
     }
 
     /**
@@ -105,24 +85,23 @@ public final class DashboardDAO implements IDashboardDAO
     @Override
     public Dashboard load( int nKey, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
-        daoUtil.setInt( 1, nKey );
-        daoUtil.executeQuery( );
         Dashboard dashboard = null;
-
-        if ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
         {
-            dashboard = new Dashboard( );
-            int nIndex = 1;
+            daoUtil.setInt( 1, nKey );
+            daoUtil.executeQuery( );
 
-            dashboard.setId( daoUtil.getInt( nIndex++ ) );
-            dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
-            dashboard.setTitle( daoUtil.getString( nIndex++ ) );
-            dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
+            if ( daoUtil.next( ) )
+            {
+                dashboard = new Dashboard( );
+                int nIndex = 1;
 
+                dashboard.setId( daoUtil.getInt( nIndex++ ) );
+                dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
+                dashboard.setTitle( daoUtil.getString( nIndex++ ) );
+                dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
+            }
         }
-
-        daoUtil.free( );
         return dashboard;
     }
 
@@ -132,24 +111,23 @@ public final class DashboardDAO implements IDashboardDAO
     @Override
     public Dashboard loadByKibanaId( String strIdKibana, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_KIBANA_ID, plugin );
-        daoUtil.setString( 1, strIdKibana );
-        daoUtil.executeQuery( );
-        Dashboard dashboard = null;
-
-        if ( daoUtil.next( ) )
+    	Dashboard dashboard = null;
+    	try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_KIBANA_ID, plugin ) )
         {
-            dashboard = new Dashboard( );
-            int nIndex = 1;
+            daoUtil.setString( 1, strIdKibana );
+            daoUtil.executeQuery( );
 
-            dashboard.setId( daoUtil.getInt( nIndex++ ) );
-            dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
-            dashboard.setTitle( daoUtil.getString( nIndex++ ) );
-            dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
+            if ( daoUtil.next( ) )
+            {
+                dashboard = new Dashboard( );
+                int nIndex = 1;
 
+                dashboard.setId( daoUtil.getInt( nIndex++ ) );
+                dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
+                dashboard.setTitle( daoUtil.getString( nIndex++ ) );
+                dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
+            }
         }
-
-        daoUtil.free( );
         return dashboard;
     }
 
@@ -159,24 +137,24 @@ public final class DashboardDAO implements IDashboardDAO
     @Override
     public List<Dashboard> selectDashboardsList( Plugin plugin )
     {
-        List<Dashboard> dashboardList = new ArrayList<Dashboard>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery( );
-
-        while ( daoUtil.next( ) )
+        List<Dashboard> dashboardList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-            Dashboard dashboard = new Dashboard( );
-            int nIndex = 1;
+            daoUtil.executeQuery( );
 
-            dashboard.setId( daoUtil.getInt( nIndex++ ) );
-            dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
-            dashboard.setTitle( daoUtil.getString( nIndex++ ) );
-            dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
+            while ( daoUtil.next( ) )
+            {
+                Dashboard dashboard = new Dashboard( );
+                int nIndex = 1;
 
-            dashboardList.add( dashboard );
+                dashboard.setId( daoUtil.getInt( nIndex++ ) );
+                dashboard.setIdKibanaDashboard( daoUtil.getString( nIndex++ ) );
+                dashboard.setTitle( daoUtil.getString( nIndex++ ) );
+                dashboard.setIdDataSource( daoUtil.getString( nIndex++ ) );
+
+                dashboardList.add( dashboard );
+            }
         }
-
-        daoUtil.free( );
         return dashboardList;
     }
 
@@ -186,16 +164,16 @@ public final class DashboardDAO implements IDashboardDAO
     @Override
     public List<Integer> selectIdDashboardsList( Plugin plugin )
     {
-        List<Integer> dashboardList = new ArrayList<Integer>( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID, plugin );
-        daoUtil.executeQuery( );
-
-        while ( daoUtil.next( ) )
+        List<Integer> dashboardList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID, plugin ) )
         {
-            dashboardList.add( daoUtil.getInt( 1 ) );
-        }
+            daoUtil.executeQuery( );
 
-        daoUtil.free( );
+            while ( daoUtil.next( ) )
+            {
+                dashboardList.add( daoUtil.getInt( 1 ) );
+            }
+        }
         return dashboardList;
     }
 
@@ -206,15 +184,15 @@ public final class DashboardDAO implements IDashboardDAO
     public ReferenceList selectDashboardsReferenceList( Plugin plugin )
     {
         ReferenceList dashboardList = new ReferenceList( );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin );
-        daoUtil.executeQuery( );
-
-        while ( daoUtil.next( ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-            dashboardList.addItem( daoUtil.getInt( 1 ), daoUtil.getString( 2 ) );
-        }
+            daoUtil.executeQuery( );
 
-        daoUtil.free( );
+            while ( daoUtil.next( ) )
+            {
+                dashboardList.addItem( daoUtil.getInt( 1 ), daoUtil.getString( 2 ) );
+            }
+        }
         return dashboardList;
     }
 
@@ -224,10 +202,11 @@ public final class DashboardDAO implements IDashboardDAO
     @Override
     public void delete( int nIdDashboard, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
-        daoUtil.setInt( 1, nIdDashboard );
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+    	try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ))
+        {
+            daoUtil.setInt( 1, nIdDashboard );
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -236,10 +215,10 @@ public final class DashboardDAO implements IDashboardDAO
     @Override
     public void deleteAll( Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ALL, plugin );
-
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+    	try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_ALL ) )
+        {
+            daoUtil.executeUpdate( );
+        }
     }
 
     /**
@@ -248,18 +227,20 @@ public final class DashboardDAO implements IDashboardDAO
     @Override
     public boolean isDashboardExists( Dashboard dashboard, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_DASHBOARD_KIBANA_ID, plugin );
-        daoUtil.setString( 1, dashboard.getIdKibanaDashboard( ) );
-        daoUtil.executeQuery( );
-        boolean bExist = false;
-        while ( daoUtil.next( ) )
-        {
-            if ( daoUtil.getInt( 1 ) >= 1 )
+    	boolean bExist = false;
+    	try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_COUNT_DASHBOARD_KIBANA_ID, plugin ) )
+    	{
+            daoUtil.setString( 1, dashboard.getIdKibanaDashboard( ) );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
             {
-                bExist = true;
+                if ( daoUtil.getInt( 1 ) >= 1 )
+                {
+                    bExist = true;
+                }
             }
-        }
-        daoUtil.free( );
+    	}
         return bExist;
     }
 
@@ -269,15 +250,16 @@ public final class DashboardDAO implements IDashboardDAO
     @Override
     public void store( Dashboard dashboard, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
-        int nIndex = 1;
+    	try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin )  )
+    	{	
+            int nIndex = 1;
 
-        daoUtil.setInt( nIndex++, dashboard.getId( ) );
-        daoUtil.setString( nIndex++, dashboard.getIdKibanaDashboard( ) );
-        daoUtil.setString( nIndex++, dashboard.getTitle( ) );
-        daoUtil.setInt( nIndex, dashboard.getId( ) );
+            daoUtil.setInt( nIndex++, dashboard.getId( ) );
+            daoUtil.setString( nIndex++, dashboard.getIdKibanaDashboard( ) );
+            daoUtil.setString( nIndex++, dashboard.getTitle( ) );
+            daoUtil.setInt( nIndex, dashboard.getId( ) );
 
-        daoUtil.executeUpdate( );
-        daoUtil.free( );
+            daoUtil.executeUpdate( );
+    	}
     }
 }
