@@ -46,14 +46,13 @@ import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.signrequest.BasicAuthorizationAuthenticator;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * DashboardService
@@ -159,10 +158,9 @@ public class DashboardService
      */
     public List<Dashboard> getListDashboard( String strJSON )
     {
-        List<Dashboard> listDashBoard = new ArrayList<Dashboard>( );
-        JSONObject obj = (JSONObject) JSONSerializer.toJSON( strJSON );
-        JSONArray arr = obj.getJSONArray( "saved_objects" );
-        for ( int i = 0; i < arr.size( ); i++ )
+        List<Dashboard> listDashBoard = new ArrayList<>( );
+        JSONArray arr = new JSONObject( strJSON ).getJSONArray( "saved_objects" );
+        for ( int i = 0; i < arr.length( ); i++ )
         {
             JSONObject document = arr.getJSONObject( i );
             Dashboard dashboard = new Dashboard( );

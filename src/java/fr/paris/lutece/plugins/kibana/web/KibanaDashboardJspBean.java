@@ -37,9 +37,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.plugins.kibana.service.DashboardService;
@@ -56,6 +57,8 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 /**
  * KibanaDashboard JSP Bean abstract class for JSP Bean
  */
+@RequestScoped
+@Named
 @Controller( controllerJsp = "KibanaDashboard.jsp", controllerPath = "jsp/admin/plugins/kibana/", right = KibanaDashboardJspBean.RIGHT_KIBANADASHBOARD )
 public class KibanaDashboardJspBean extends MVCAdminJspBean
 {

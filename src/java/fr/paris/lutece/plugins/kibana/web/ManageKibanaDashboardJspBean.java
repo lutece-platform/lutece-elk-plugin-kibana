@@ -39,20 +39,29 @@ import fr.paris.lutece.plugins.kibana.service.DashboardService;
 import fr.paris.lutece.plugins.kibana.utils.constants.KibanaConstants;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
+import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
+import fr.paris.lutece.portal.web.util.IPager;
+import fr.paris.lutece.portal.web.util.Pager;
 import fr.paris.lutece.util.url.UrlItem;
 
 import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This class provides the user interface to manage Dashboard features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageDashboards.jsp", controllerPath = "jsp/admin/plugins/kibana/", right = "KIBANA_MANAGEMENT" )
-public class DashboardJspBean extends ManageKibanaJspBean
+@RequestScoped
+@Named
+@Controller( controllerJsp = "ManageDashboards.jsp", controllerPath = "jsp/admin/plugins/kibana/", right = "KIBANA_MANAGEMENT", securityTokenEnabled = false )
+public class ManageKibanaDashboardJspBean extends MVCAdminJspBean
 {
     // Uid
     private static final long serialVersionUID = 2675669204436156692L;
@@ -60,8 +69,9 @@ public class DashboardJspBean extends ManageKibanaJspBean
     // Templates
     private static final String TEMPLATE_MANAGE_DASHBOARDS = "/admin/plugins/kibana/manage_dashboards.html";
 
-    // Properties for page titles
+    // Properties
     private static final String PROPERTY_PAGE_TITLE_MANAGE_DASHBOARDS = "kibana.manage_dashboards.pageTitle";
+    private static final String PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE = "kibana.listItems.itemsPerPage";
 
     // Markers
     private static final String MARK_DASHBOARD_LIST = "dashboard_list";
@@ -80,9 +90,16 @@ public class DashboardJspBean extends ManageKibanaJspBean
     private static final String ACTION_CONFIRM_REMOVE_DASHBOARD = "confirmRemoveDashboard";
     private static final String ACTION_REMOVE_DASHBOARD = "removeDashboard";
 
+    @Inject
+    @Pager( listBookmark = MARK_DASHBOARD_LIST, defaultItemsPerPage = PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE )
+    private IPager<Dashboard, Void> _pager;
+
+    @Inject
+    private Models _model;
+
     /**
      * Build the Manage View
-     * 
+     *
      * @param request
      *            The HTTP request
      * @return The page
@@ -91,14 +108,18 @@ public class DashboardJspBean extends ManageKibanaJspBean
     public String getManageDashboards( HttpServletRequest request )
     {
         List<Dashboard> listDashboards = DashboardHome.getDashboardsList( );
-        Map<String, Object> model = getPaginatedListModel( request, MARK_DASHBOARD_LIST, listDashboards, JSP_MANAGE_DASHBOARDS );
 
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_DASHBOARDS, TEMPLATE_MANAGE_DASHBOARDS, model );
+        UrlItem url = new UrlItem( JSP_MANAGE_DASHBOARDS );
+        _pager.withBaseUrl( url.getUrl( ) )
+                .withListItem( listDashboards )
+                .populateModels( request, _model, getLocale( ) );
+
+        return getPage( PROPERTY_PAGE_TITLE_MANAGE_DASHBOARDS, TEMPLATE_MANAGE_DASHBOARDS, _model );
     }
 
     /**
      * Import all dashboards from JSON to database. Insert only if it didnt exist.
-     * 
+     *
      * @param request
      * @return
      */
@@ -123,14 +144,14 @@ public class DashboardJspBean extends ManageKibanaJspBean
         UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_DASHBOARD ) );
         url.addParameter( KibanaConstants.PARAMETER_ID_DASHBOARD, nId );
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_DASHBOARD, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_DASHBOARD, null, null, url.getUrl( ), null, AdminMessage.TYPE_CONFIRMATION, null, JSP_MANAGE_DASHBOARDS );
 
         return redirect( request, strMessageUrl );
     }
 
     /**
      * Import all dashboards from JSON to database. Insert only if it didnt exist.
-     * 
+     *
      * @param request
      * @return
      */

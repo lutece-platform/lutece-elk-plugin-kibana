@@ -2,9 +2,9 @@
 
 <jsp:include page="../../AdminHeader.jsp" />
 
-<jsp:useBean id="managekibana" scope="session" class="fr.paris.lutece.plugins.kibana.web.ManageKibanaJspBean" />
+<%@page import="fr.paris.lutece.plugins.kibana.web.ManageKibanaJspBean"%>
 
-<% managekibana.init( request, managekibana.RIGHT_MANAGEKIBANA ); %>
-<%= managekibana.getManageKibanaHome ( request ) %>
+${ manageKibanaJspBean.init( pageContext.request, ManageKibanaJspBean.RIGHT_MANAGEKIBANA ) }
+${ manageKibanaJspBean.getManageKibanaHome( pageContext.request ) }
 
 <%@ include file="../../AdminFooter.jsp" %>
