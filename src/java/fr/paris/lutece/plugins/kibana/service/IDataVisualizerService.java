@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.kibana.service;
 
 import fr.paris.lutece.plugins.elasticdata.business.DataSource;
-import fr.paris.lutece.portal.business.event.ResourceEvent;
 
 /**
  * IDashboardDAO Interface
@@ -44,18 +43,16 @@ public interface IDataVisualizerService
     /**
      * Create or Update Data Visualizer
      * 
-     * @param event
-     *            event
+     * @param dataSource
+     *            The data source
      */
-    void createOrUpdate( ResourceEvent event, DataSource dataSource );
+    void createOrUpdate( DataSource dataSource );
 
     /**
      * Check if data visualizer exist for datasource
      * 
      * @param datasource
-     *            instance of the Dashboard object to insert
-     * @param plugin
-     *            the Plugin
+     *            The data source
      */
     Boolean isExistDataSourceDataVisualizer( DataSource datasource );
 

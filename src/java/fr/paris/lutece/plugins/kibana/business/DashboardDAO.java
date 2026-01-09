@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.kibana.business;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ import java.util.List;
 /**
  * This class provides Data Access methods for Dashboard objects
  */
-public final class DashboardDAO implements IDashboardDAO
+@ApplicationScoped
+public class DashboardDAO implements IDashboardDAO
 {
     // Constants
     private static final String SQL_QUERY_SELECT = "SELECT id_dashboard, idKibanaDashboard, title, dataSourceName FROM kibana_dashboard WHERE id_dashboard = ?";

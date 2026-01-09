@@ -35,11 +35,9 @@ package fr.paris.lutece.plugins.kibana.service;
 
 import java.io.Serializable;
 
-import fr.paris.lutece.portal.service.event.ResourceEventManager;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 /**
  * class FormPlugin
@@ -51,18 +49,6 @@ public final class KibanaPlugin extends PluginDefaultImplementation implements S
 
     // Generated serial UID
     private static final long serialVersionUID = 363631628432576426L;
-
-    // Beans
-    private static final String BEAN_KIBANA_DATASOURCE_EVENT_LISTENER = "kibana.dataSourceEventListener";
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void init( )
-    {
-        ResourceEventManager.register( SpringContextService.getBean( BEAN_KIBANA_DATASOURCE_EVENT_LISTENER ) );
-    }
 
     /**
      * Return the plugin

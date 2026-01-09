@@ -35,71 +35,40 @@ package fr.paris.lutece.plugins.kibana.service.listener;
 
 import fr.paris.lutece.plugins.elasticdata.business.DataSource;
 import fr.paris.lutece.plugins.elasticdata.service.DataSourceService;
-import fr.paris.lutece.plugins.elasticdata.service.DataSourceUtils;
+import fr.paris.lutece.plugins.elasticdata.service.event.DataSourceIndexedEvent;
 import fr.paris.lutece.plugins.kibana.service.IDataVisualizerService;
 import fr.paris.lutece.plugins.kibana.service.SavedObjectService;
-import fr.paris.lutece.portal.business.event.EventRessourceListener;
-import fr.paris.lutece.portal.business.event.ResourceEvent;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.ObservesAsync;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
-public class DataSourceEventListener implements EventRessourceListener
+@ApplicationScoped
+public class DataSourceEventListener
 {
-    private static final String CONSTANT_FORM_RESPONSE_LISTENER_NAME = "DataSourceEventListener";
-
-    @Override
-    public String getName( )
-    {
-        return CONSTANT_FORM_RESPONSE_LISTENER_NAME;
-    }
-
+	@Inject
+	private Instance<IDataVisualizerService> _dataVisualizerServices;
+	
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addedResource( ResourceEvent event )
-    {
-        if ( checkResourceType( event ) )
-        {
-            SavedObjectService.initEnvironnement( );
-
-            String strIdResource = event.getIdResource( );
-            DataSource dataSource = DataSourceService.getDataSource( strIdResource );
-            for ( IDataVisualizerService dataVisualizerService : SpringContextService.getBeansOfType( IDataVisualizerService.class ) )
-            {
-                if ( dataVisualizerService.isExistDataSourceDataVisualizer( dataSource ) )
-                {
-                    SavedObjectService.doRefreshKibanaIndexPattern( dataSource.getTargetIndexName( ) );
-                    dataVisualizerService.createOrUpdate( event, dataSource );
-                }
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void deletedResource( ResourceEvent event )
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updatedResource( ResourceEvent event )
-    {
-    }
-
-    /**
-     * Check ressource type
+     * Handle the indexed datasource event
      * 
      * @param event
-     *            resource event
-     * 
+     *            the event for the indexed datasource
      */
-    private boolean checkResourceType( ResourceEvent event )
+    public void indexedDataSource( @ObservesAsync DataSourceIndexedEvent event )
     {
-        return DataSourceUtils.RESOURCE_TYPE_INDEXING.equals( event.getTypeResource( ) );
+        SavedObjectService.initEnvironnement( );
+
+        DataSource dataSource = DataSourceService.getDataSource( event.getDataSourceId( ) );
+        if ( !_dataVisualizerServices.isUnsatisfied( ) )
+        {
+        	_dataVisualizerServices.stream( )
+        	.filter( service -> Boolean.TRUE.equals( service.isExistDataSourceDataVisualizer( dataSource ) ) )
+        	.findFirst( )
+        	.ifPresent( service -> {
+        		SavedObjectService.doRefreshKibanaIndexPattern( dataSource.getTargetIndexName( ) );
+        		service.createOrUpdate( dataSource );
+            });
+        }
     }
 }

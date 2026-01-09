@@ -47,9 +47,8 @@ import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.signrequest.BasicAuthorizationAuthenticator;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -91,8 +90,8 @@ public class SavedObjectService
     /**
      * Get dashboard
      * 
-     * @param strIdIndexPattern
-     *            The index pattern id
+     * @param strIdDashboard
+     *            The dashboard id
      */
     public static JSONObject getDashboard( String strIdDashboard )
     {
@@ -105,7 +104,7 @@ public class SavedObjectService
         {
             strFieldsJSON = httpAccess.doGet( KIBANA_SERVER_URL + "/s/" + KIBANA_SERVER_SPACE_ID + KIBANA_SERVER_DASHBOARD_OBJECT_API_URL + strIdDashboard,
                     _authenticator, null, headers );
-            JSONObject jsonResult = (JSONObject) JSONSerializer.toJSON( strFieldsJSON );
+            JSONObject jsonResult = new JSONObject( strFieldsJSON );
             Object statusCode = jsonResult.get( "statusCode" );
             if ( statusCode != null )
             {
@@ -191,7 +190,7 @@ public class SavedObjectService
             Map<String, String> headers = new HashMap<>( );
             headers.put( "kbn-xsrf", "true" );
             String strResult = httpAccess.doGet( KIBANA_SERVER_URL + KIBANA_SERVER_SPACE_API_URL + "/" + strSpaceId, _authenticator, null, headers, null );
-            JSONObject jsonResult = (JSONObject) JSONSerializer.toJSON( strResult );
+            JSONObject jsonResult = new JSONObject( strResult );
             Object statusCode = jsonResult.get( "statusCode" );
             if ( statusCode != null )
             {
@@ -261,8 +260,8 @@ public class SavedObjectService
             obj.put( "full_name", strLogin );
 
             JSONArray roles = new JSONArray( );
-            roles.add( KIBANA_SERVER_SPACE_ID + "_dashboard" );
-            obj.accumulate( "roles", roles );
+            roles.put( KIBANA_SERVER_SPACE_ID + "_dashboard" );
+            obj.put( "roles", roles );
 
             String strObj = removeUnusedBackSlash( obj.toString( ) );
 
@@ -295,7 +294,7 @@ public class SavedObjectService
                     KIBANA_SERVER_URL + KIBANA_SERVER_REFRESH_INDEX_PATTERN_NAME + strIdIndexPattern + KIBANA_SERVER_REFRESH_INDEX_PATTERN_PARAMETERS,
                     _authenticator, null, headers );
             // get fields attributes
-            JSONObject obj = (JSONObject) JSONSerializer.toJSON( strFieldsJSON );
+            JSONObject obj = new JSONObject( strFieldsJSON );
             Object objFields = obj.get( "fields" );
             String strFields = objFields.toString( );
             // build json to fit to kibana api
@@ -304,7 +303,7 @@ public class SavedObjectService
             updateFieldsJSON.put( "fields", escape( strFields ) );
             updateFieldsJSON.put( "timeFieldName", "timestamp" );
             JSONObject updateAttributeJSON = new JSONObject( );
-            updateAttributeJSON.accumulate( "attributes", updateFieldsJSON );
+            updateAttributeJSON.put( "attributes", updateFieldsJSON );
             String strAttributes = updateAttributeJSON.toString( );
             strAttributes = removeUnusedBackSlash( strAttributes );
             httpAccess.doPutJSON( KIBANA_SERVER_URL + "/s/" + KIBANA_SERVER_SPACE_ID + KIBANA_SERVER_INDEX_API_URL + strIdIndexPattern, strAttributes,
@@ -350,7 +349,7 @@ public class SavedObjectService
         if ( dashboard != null )
         {
             JSONArray references = dashboard.getJSONArray( "references" );
-            for ( int i = 0; i < references.size( ); i++ )
+            for ( int i = 0; i < references.length( ); i++ )
             {
                 JSONObject ref = references.getJSONObject( i );
                 String idVisualization = ref.getString( "id" );
@@ -412,8 +411,8 @@ public class SavedObjectService
     /**
      * Create a dashboard visualization panel object
      * 
-     * @param strIdVisualisation
-     *            The visualization id
+     * @param panelId
+     *            The panel id
      * @param gird
      *            The gird of the visualization
      * @return PanelJSON object
@@ -478,10 +477,9 @@ public class SavedObjectService
             String strFieldsJSON = httpAccess.doGet( KIBANA_SERVER_URL + "/s/" + KIBANA_SERVER_SPACE_ID + KIBANA_SERVER_REFRESH_INDEX_PATTERN_NAME
                     + strIdIndexPattern + KIBANA_SERVER_REFRESH_INDEX_PATTERN_PARAMETERS, _authenticator, null, headers );
             // get fields attributes
-            JSONObject obj = (JSONObject) JSONSerializer.toJSON( strFieldsJSON );
-            Object objFields = obj.get( "fields" );
-            JSONArray fields = JSONArray.fromObject( objFields );
-            for ( int n = 0; n < fields.size( ); n++ )
+            JSONObject obj = new JSONObject( strFieldsJSON );
+            JSONArray fields = obj.getJSONArray("fields");
+            for ( int n = 0; n < fields.length( ); n++ )
             {
                 JSONObject object = fields.getJSONObject( n );
                 ReferenceItem fieldItem = new ReferenceItem( );
@@ -514,14 +512,14 @@ public class SavedObjectService
         try
         {
             String response = elastic.search( strIndexId, bodyJSON.replaceAll( "/\\/", "" ) );
-            JSONObject obj = (JSONObject) JSONSerializer.toJSON( response );
-            JSONObject aggr = JSONObject.fromObject( obj.get( "aggregations" ) );
-            JSONObject langs = JSONObject.fromObject( aggr.get( "langs" ) );
-            JSONArray values = JSONArray.fromObject( langs.get( "buckets" ) );
-            for ( int i = 0; i < values.size( ); i++ )
+            JSONObject obj = new JSONObject( response );
+            JSONObject aggr = obj.getJSONObject("aggregations");
+            JSONObject langs = aggr.getJSONObject("langs");
+            JSONArray values = langs.getJSONArray("buckets");
+            for ( int i = 0; i < values.length( ); i++ )
             {
-                JSONObject value = (JSONObject) JSONSerializer.toJSON( values.get( i ) );
-                JSONObject key = (JSONObject) JSONSerializer.toJSON( value.get( "key" ) );
+                JSONObject value = new JSONObject( values.get( i ) );
+                JSONObject key = new JSONObject( value.get( "key" ) );
                 parentList.addItem( key.getString( "parentId" ).toString( ), key.get( "parentName" ).toString( ) );
             }
         }
@@ -552,11 +550,11 @@ public class SavedObjectService
         try
         {
             String response = elastic.search( strIndexId, bodyJSON.replaceAll( "/\\/", "" ) );
-            JSONObject obj = (JSONObject) JSONSerializer.toJSON( response );
-            JSONObject aggr = JSONObject.fromObject( obj.get( "aggregations" ) );
-            JSONObject langs = JSONObject.fromObject( aggr.get( "langs" ) );
-            JSONArray values = JSONArray.fromObject( langs.get( "buckets" ) );
-            for ( int i = 0; i < values.size( ); i++ )
+            JSONObject obj = new JSONObject( response );
+            JSONObject aggr = obj.getJSONObject("aggregations");
+            JSONObject langs = aggr.getJSONObject("langs");
+            JSONArray values = langs.getJSONArray("buckets");
+            for ( int i = 0; i < values.length( ); i++ )
             {
                 String value = values.get( i ).toString( );
                 distinctValuesList.add( value );
@@ -638,8 +636,8 @@ public class SavedObjectService
         HttpAccess httpAccess = new HttpAccess( );
         JSONObject objCreate = new JSONObject( );
         JSONArray jsonArray = new JSONArray( );
-        jsonArray.add( savedObject.toString( ) );
-        objCreate.accumulate( "objects", jsonArray );
+        jsonArray.put( savedObject );
+        objCreate.put( "objects", jsonArray );
         objCreate.put( "version", "1" );
         String strObject = objCreate.toString( );
         strObject = removeUnusedBackSlash( strObject );
@@ -669,9 +667,9 @@ public class SavedObjectService
         JSONArray jsonArray = new JSONArray( );
         for ( JSONObject savedObject : savedObjectList )
         {
-            jsonArray.add( savedObject.toString( ) );
+            jsonArray.put( savedObject.toString( ) );
         }
-        objCreate.accumulate( "objects", jsonArray );
+        objCreate.put( "objects", jsonArray );
         objCreate.put( "version", "1" );
         String strObject = objCreate.toString( );
         strObject = removeUnusedBackSlash( strObject );

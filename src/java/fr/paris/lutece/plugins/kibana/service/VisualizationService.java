@@ -34,11 +34,13 @@
 package fr.paris.lutece.plugins.kibana.service;
 
 import java.util.UUID;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class VisualizationService
 {
+	private VisualizationService( ){}
+
     /**
      * create a standard visualisation object to fill
      * 
@@ -58,7 +60,7 @@ public class VisualizationService
         reference.put( "name", "kibanaSavedObjectMeta.searchSourceJSON.index" );
         reference.put( "type", "index-pattern" );
         JSONArray references = new JSONArray( );
-        references.add( reference );
+        references.put( reference );
         JSONObject attributes = new JSONObject( );
         attributes.put( "title", strTitle.replace( ".keyword", "" ) );
         attributes.put( "description", "" );
@@ -68,7 +70,7 @@ public class VisualizationService
         visualizationJSON.put( "attributes", attributes );
         visualizationJSON.put( "id", strIdVisualization );
         visualizationJSON.put( "migrationVersion", migrationVersion );
-        visualizationJSON.accumulate( "references", references );
+        visualizationJSON.put( "references", references );
         visualizationJSON.put( "type", "visualization" );
         visualizationJSON.put( "updated_at", "2020-10-02T20:04:58.470Z" );
         visualizationJSON.put( "version", "Wzc4OTUsN10=" );
@@ -122,7 +124,7 @@ public class VisualizationService
                 + "\",\"name\":\"indexpattern-datasource-current-indexpattern\",\"type\":\"index-pattern\"},{\"id\":\"" + strIdIndexPattern
                 + "\",\"name\":\"indexpattern-datasource-layer-" + strLayerId
                 + "\",\"type\":\"index-pattern\"}],\"type\":\"lens\",\"updated_at\":\"2020-12-27T09:57:38.881Z\",\"version\":\"WzQ3Mzk2LDRd\"}";
-        SavedObjectService.create( JSONObject.fromObject( strDonutObj ) );
+        SavedObjectService.create( new JSONObject( strDonutObj ) );
     }
 
     /**

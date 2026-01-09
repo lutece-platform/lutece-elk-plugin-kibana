@@ -3,14 +3,14 @@
     <parent>
         <artifactId>lutece-global-pom</artifactId>
         <groupId>fr.paris.lutece.tools</groupId>
-        <version>7.0.2</version>
+        <version>8.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>plugin-kibana</artifactId>
     <packaging>lutece-plugin</packaging>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Lutece kibana plugin</name>
     <description>Provides Kibana dashboards</description>
     
@@ -35,31 +35,39 @@
         <dependency>
             <groupId>fr.paris.lutece</groupId>
             <artifactId>lutece-core</artifactId>
-            <version>[7.0.0,7.9.9)</version>
+            <version>[8.0.0-SNAPSHOT,)</version>
             <type>lutece-core</type>
         </dependency>
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>library-httpaccess</artifactId>
-            <version>[2.6.0,3.9.9)</version>
+            <version>[4.0.0-SNAPSHOT,)</version>
         </dependency>
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>plugin-elasticdata</artifactId>
-            <version>[2.1.0,2.9.9)</version>
+            <version>[3.0.0-SNAPSHOT,)</version>
         </dependency> 
         <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.4</version>
-            <classifier>jdk15</classifier>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20250517</version>
+        </dependency>
+        <dependency>
+		    <groupId>fr.paris.lutece.plugins</groupId>
+		    <artifactId>library-lutece-unit-testing</artifactId>
+		    <type>jar</type>
+		    <scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <properties>
         <componentName>kibana</componentName>
-        <jiraProjectName>KIBANA</jiraProjectName>
-        <jiraComponentId>12750</jiraComponentId>
     </properties>
     
     <scm>

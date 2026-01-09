@@ -1,9 +1,9 @@
-<jsp:useBean id="managekibanaDashboard" scope="session" class="fr.paris.lutece.plugins.kibana.web.DashboardJspBean" />
-<% String strContent = managekibanaDashboard.processController ( request , response ); %>
-
 <%@ page errorPage="../../ErrorPage.jsp" %>
+
+${ pageContext.setAttribute( 'strContent', manageKibanaDashboardJspBean.processController( pageContext.request , pageContext.response ) ) }
+
 <jsp:include page="../../AdminHeader.jsp" />
 
-<%= strContent %>
+${ pageContext.getAttribute( 'strContent' ) }
 
 <%@ include file="../../AdminFooter.jsp" %>

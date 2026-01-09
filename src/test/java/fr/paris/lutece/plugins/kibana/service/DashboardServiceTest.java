@@ -37,7 +37,7 @@ import fr.paris.lutece.plugins.kibana.business.Dashboard;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.test.Utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -53,7 +53,7 @@ public class DashboardServiceTest extends LuteceTestCase
      * Test of getListDashboard method, of class DashboardService.
      */
     @Test
-    public void testGetListDashboard( ) throws IOException
+    void testGetListDashboard( ) throws IOException
     {
         System.out.println( "getListDashboard" );
 
@@ -61,7 +61,7 @@ public class DashboardServiceTest extends LuteceTestCase
         System.out.println( strJSON );
 
         List<Dashboard> list = DashboardService.getInstance( ).getListDashboard( strJSON );
-        assertTrue( list.size( ) == 2 );
+        assertEquals( list.size( ), 2 );
         assertEquals( list.get( 0 ).getIdKibanaDashboard( ), "87a95c20-f257-11e8-b738-7fcdd48fbabe" );
         assertEquals( list.get( 0 ).getTitle( ), "a # b" );
         assertEquals( list.get( 1 ).getIdKibanaDashboard( ), "9fd58fd0-f257-11e8-b738-7fcdd48fbabe" );
