@@ -17,7 +17,7 @@
                                 ${dashboard.title}
                             </td>
                             <td>
-                                <@aButton href='jsp/admin/plugins/kibana/KibanaDashboard.jsp?view=dashboard&tab=${dashboard.idKibanaDashboard}' title='#i18n{forms.manageForm.stats.label}' hideTitle=['all'] buttonIcon='chart-area' size='md' color='primary' />
+                                <@aButton href='jsp/admin/plugins/kibana/KibanaDashboard.jsp?view=dashboard&tab=${dashboard.idKibanaDashboard?url}' title='#i18n{forms.manageForm.stats.label}' hideTitle=['all'] buttonIcon='chart-area' size='md' color='primary' />
                             </td>
                         </tr>
                     </#list>
