@@ -4,11 +4,11 @@
             <#if dashboard.idDataSource?has_content && dashboard.idDataSource=="FormsDataSource">
                 <#if right_elasticdata_management??>
                     <@button title='#i18n{elasticdata.manage_elasticdata.buttonIndex}' buttonIcon='play' color="primary"
-                        params='data-indexId="FormsDataSource"' id='btn-FormsDataSource' />
+                        params={"data-indexId": "FormsDataSource"} id='btn-FormsDataSource' />
                 </#if>
                 <#if right_elasticdata_forms_management??>
                     <@aButton
-                        href='jsp/admin/plugins/elasticdata/modules/forms/IndexingAppElasticData.jsp?view=modifyFormIndexation&idForm=${dashboard.idKibanaDashboard?substring(dashboard.idKibanaDashboard?index_of("_") + 1)}'
+                        href='jsp/admin/plugins/elasticdata/modules/forms/IndexingAppElasticData.jsp?view=modifyFormIndexation&idForm=${dashboard.idKibanaDashboard?substring(dashboard.idKibanaDashboard?index_of("_") + 1)?url}'
                         title='Gestion des champs d\' indexation' buttonIcon='cogs' size='md' color='primary' />
                 </#if>
             </#if>
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                         <iframe
-                            src="${kibana_server_url}/s/${kibana_server_space_id}/app/kibana#/dashboard/${dashboard.idKibanaDashboard}?embed=true&_g=(filters:!(),query:(language:lucene,query:''),refreshInterval:(pause:!f,value:10000))&_a=(description:'',filters:!(),fullScreenMode:!f,options:(hidePanelTitles:!f,useMargins:!t),query:(language:lucene,query:''),timeRestore:!f,viewMode:view)&show-query-input=true&show-time-filter=true"
+                            src="${safeUrl(kibana_server_url)}/s/${kibana_server_space_id?url}/app/kibana#/dashboard/${dashboard.idKibanaDashboard?url}?embed=true&_g=(filters:!(),query:(language:lucene,query:''),refreshInterval:(pause:!f,value:10000))&_a=(description:'',filters:!(),fullScreenMode:!f,options:(hidePanelTitles:!f,useMargins:!t),query:(language:lucene,query:''),timeRestore:!f,viewMode:view)&show-query-input=true&show-time-filter=true"
                             width="100%" height="2000" frameBorder="0"></iframe>
                     </@tabContent>
                 </@columns>
@@ -89,7 +89,7 @@
                     const bar = progressBar.querySelector("*[aria-valuenow]");
                     bar.setAttribute("aria-valuenow", percent);
                     bar.style.width = percent + "%"
-                    bar.innerHTML = percent.toFixed(2) + "%" + " (" + currentNbIndexedObj + "/" + nbTotalObj + ")";
+                    bar.textContent = percent.toFixed(2) + "%" + " (" + currentNbIndexedObj + "/" + nbTotalObj + ")";
                     if (percent >= 100) {
                         document.getElementById("btn-" + dataSourceId).disabled = false;
                     }
